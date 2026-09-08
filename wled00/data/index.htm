@@ -180,6 +180,131 @@
         outline-offset:3px;
     }
 
+
+    #luluPage .lulu-config-link {
+        background:#f7f8fa;
+    }
+
+    #luluPage .lulu-config-modal {
+        position:fixed;
+        inset:0;
+        z-index:100010;
+        display:none;
+        align-items:flex-start;
+        justify-content:center;
+        padding:24px 16px;
+        padding-top:max(24px, env(safe-area-inset-top));
+        padding-bottom:max(24px, env(safe-area-inset-bottom));
+        overflow-y:auto;
+        background:rgba(22,26,32,.55);
+        backdrop-filter:blur(3px);
+        -webkit-backdrop-filter:blur(3px);
+    }
+
+    #luluPage .lulu-config-card {
+        width:100%;
+        max-width:440px;
+        margin:auto 0;
+        padding:24px;
+        border:1px solid var(--lulu-line);
+        border-radius:18px;
+        background:#fff;
+        box-shadow:0 18px 60px rgba(0,0,0,.22);
+    }
+
+    #luluPage .lulu-config-title {
+        margin:0 0 6px;
+        color:var(--lulu-brand-blue);
+        font-size:20px;
+        font-weight:700;
+    }
+
+    #luluPage .lulu-config-help {
+        margin:0 0 20px;
+        color:var(--lulu-muted);
+        font-size:13px;
+        line-height:1.45;
+    }
+
+    #luluPage .lulu-config-row {
+        padding:14px 0;
+        border-top:1px solid var(--lulu-line);
+    }
+
+    #luluPage .lulu-config-row:first-of-type {
+        border-top:0;
+    }
+
+    #luluPage .lulu-config-row-title {
+        margin-bottom:9px;
+        color:var(--lulu-brand-blue);
+        font-size:13px;
+        font-weight:700;
+    }
+
+    #luluPage .lulu-field-label {
+        display:block;
+        margin:8px 0 5px;
+        color:var(--lulu-muted);
+        font-size:12px;
+        font-weight:600;
+    }
+
+    #luluPage .lulu-config-input,
+    #luluPage .lulu-config-select {
+        width:100%;
+        min-height:43px;
+        padding:10px 11px;
+        border:1px solid #cfd3d8;
+        border-radius:9px;
+        background:#fff;
+        color:var(--lulu-ink);
+        font:500 14px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    }
+
+    #luluPage .lulu-config-input:focus,
+    #luluPage .lulu-config-select:focus {
+        border-color:var(--lulu-brand-blue);
+        outline:none;
+        box-shadow:0 0 0 2px rgba(50,60,90,.12);
+    }
+
+    #luluPage .lulu-config-actions {
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+        margin-top:18px;
+    }
+
+    #luluPage .lulu-config-action {
+        min-height:44px;
+        border:1px solid var(--lulu-line);
+        border-radius:9px;
+        font-size:13px;
+        font-weight:700;
+        cursor:pointer;
+    }
+
+    #luluPage .lulu-config-action.cancel {
+        background:#fff;
+        color:var(--lulu-brand-blue);
+    }
+
+    #luluPage .lulu-config-action.save {
+        background:var(--lulu-brand-blue);
+        border-color:var(--lulu-brand-blue);
+        color:#fff;
+    }
+
+    #luluPage .lulu-config-status {
+        min-height:18px;
+        margin:12px 0 0;
+        text-align:center;
+        color:var(--lulu-muted);
+        font-size:12px;
+        line-height:1.4;
+    }
+
     #luluBackButton {
         position:fixed;
         top:max(12px, env(safe-area-inset-top));
@@ -236,28 +361,74 @@
     
     <!-- 2x2 Preset Grid Matrix -->
     <div class="preset-grid">
-        <button class="preset-btn" onclick="sendWled('PL=1')">
+        <button class="preset-btn" type="button" onclick="runLuluButton(0)">
             <span class="icon">✨</span>
-            <span class="label">Preset 1</span>
+            <span class="label" id="luluButtonLabel0">Preset 1</span>
         </button>
-        <button class="preset-btn" onclick="sendWled('PL=2')">
+        <button class="preset-btn" type="button" onclick="runLuluButton(1)">
             <span class="icon">🌅</span>
-            <span class="label">Preset 2</span>
+            <span class="label" id="luluButtonLabel1">Preset 2</span>
         </button>
-        <button class="preset-btn" onclick="sendWled('PL=3')">
+        <button class="preset-btn" type="button" onclick="runLuluButton(2)">
             <span class="icon">🌌</span>
-            <span class="label">Preset 3</span>
+            <span class="label" id="luluButtonLabel2">Preset 3</span>
         </button>
-        <button class="preset-btn" onclick="sendWled('PL=4')">
+        <button class="preset-btn" type="button" onclick="runLuluButton(3)">
             <span class="icon">🌊</span>
-            <span class="label">Preset 4</span>
+            <span class="label" id="luluButtonLabel3">Preset 4</span>
         </button>
     </div>
 
     <!-- Administrative Paths (Single-line items stacked sequentially) -->
     <div class="footer-navigation">
+        <a href="#" onclick="openLuluConfig(); return false;" class="wide-link lulu-config-link">Configure Buttons</a>
         <a href="#" onclick="openSetup(); return false;" class="wide-link">Setup V1.0</a>
         <a href="/settings" onclick="openDeviceSettings(); return false;" class="wide-link">Device Settings</a>
+    </div>
+</div>
+
+<div id="luluConfigModal" class="lulu-config-modal" role="dialog" aria-modal="true" aria-labelledby="luluConfigTitle">
+    <div class="lulu-config-card">
+        <h2 id="luluConfigTitle" class="lulu-config-title">Configure Buttons</h2>
+        <p class="lulu-config-help">Choose any preset saved on this controller and give each dashboard button your own name.</p>
+
+        <div class="lulu-config-row">
+            <div class="lulu-config-row-title">Button 1</div>
+            <label class="lulu-field-label" for="luluLabelInput0">Button label</label>
+            <input id="luluLabelInput0" class="lulu-config-input" type="text" maxlength="24" autocomplete="off">
+            <label class="lulu-field-label" for="luluPresetSelect0">Preset</label>
+            <select id="luluPresetSelect0" class="lulu-config-select" onchange="luluPresetChanged(0)"></select>
+        </div>
+
+        <div class="lulu-config-row">
+            <div class="lulu-config-row-title">Button 2</div>
+            <label class="lulu-field-label" for="luluLabelInput1">Button label</label>
+            <input id="luluLabelInput1" class="lulu-config-input" type="text" maxlength="24" autocomplete="off">
+            <label class="lulu-field-label" for="luluPresetSelect1">Preset</label>
+            <select id="luluPresetSelect1" class="lulu-config-select" onchange="luluPresetChanged(1)"></select>
+        </div>
+
+        <div class="lulu-config-row">
+            <div class="lulu-config-row-title">Button 3</div>
+            <label class="lulu-field-label" for="luluLabelInput2">Button label</label>
+            <input id="luluLabelInput2" class="lulu-config-input" type="text" maxlength="24" autocomplete="off">
+            <label class="lulu-field-label" for="luluPresetSelect2">Preset</label>
+            <select id="luluPresetSelect2" class="lulu-config-select" onchange="luluPresetChanged(2)"></select>
+        </div>
+
+        <div class="lulu-config-row">
+            <div class="lulu-config-row-title">Button 4</div>
+            <label class="lulu-field-label" for="luluLabelInput3">Button label</label>
+            <input id="luluLabelInput3" class="lulu-config-input" type="text" maxlength="24" autocomplete="off">
+            <label class="lulu-field-label" for="luluPresetSelect3">Preset</label>
+            <select id="luluPresetSelect3" class="lulu-config-select" onchange="luluPresetChanged(3)"></select>
+        </div>
+
+        <div class="lulu-config-actions">
+            <button type="button" class="lulu-config-action cancel" onclick="closeLuluConfig()">Cancel</button>
+            <button type="button" class="lulu-config-action save" id="luluSaveButton" onclick="saveLuluConfig()">Save</button>
+        </div>
+        <p id="luluConfigStatus" class="lulu-config-status"></p>
     </div>
 </div>
 </div>
@@ -639,7 +810,18 @@
 <!--  <script src="iro.js"></script> NOTE: iro.js is loaded at the beginning of index.js -->
 
 <script>
-    // LULU quick controls
+    // LULU dashboard configuration.
+    // The LULU usermod exposes configuration through WLED's /json/state API
+    // and persists it to cfg.json on the ESP32.
+    var luluButtons = [
+        { label:'Preset 1', preset:1 },
+        { label:'Preset 2', preset:2 },
+        { label:'Preset 3', preset:3 },
+        { label:'Preset 4', preset:4 }
+    ];
+
+    var luluPresetList = [];
+
     function sendWled(query) {
         fetch('/win&' + query)
             .then(function(res) {
@@ -650,9 +832,256 @@
             });
     }
 
+    function runLuluButton(index) {
+        var button = luluButtons[index];
+        if (!button) return;
+
+        var preset = parseInt(button.preset, 10);
+        if (!Number.isFinite(preset) || preset < 1 || preset > 250) return;
+
+        sendWled('PL=' + preset);
+    }
+
+    function applyLuluLabels() {
+        for (var i = 0; i < 4; i++) {
+            var label = document.getElementById('luluButtonLabel' + i);
+            if (label) label.textContent = luluButtons[i].label || ('Preset ' + luluButtons[i].preset);
+        }
+    }
+
+    function normaliseLuluButtons(buttons) {
+        if (!Array.isArray(buttons)) return;
+
+        for (var i = 0; i < 4; i++) {
+            if (!buttons[i]) continue;
+
+            var preset = parseInt(buttons[i].preset, 10);
+            var label = typeof buttons[i].label === 'string' ? buttons[i].label.trim() : '';
+
+            if (Number.isFinite(preset) && preset >= 1 && preset <= 250) {
+                luluButtons[i].preset = preset;
+            }
+
+            if (label) {
+                luluButtons[i].label = label.substring(0, 24);
+            }
+        }
+
+        applyLuluLabels();
+    }
+
+    function loadLuluConfig() {
+        return fetch('/json/state', { cache:'no-store' })
+            .then(function(res) {
+                if (!res.ok) throw new Error('Unable to read controller configuration');
+                return res.json();
+            })
+            .then(function(state) {
+                if (state && state.LULU && Array.isArray(state.LULU.buttons)) {
+                    normaliseLuluButtons(state.LULU.buttons);
+                    return true;
+                }
+                return false;
+            })
+            .catch(function(err) {
+                console.warn('LULU configuration unavailable:', err);
+                return false;
+            });
+    }
+
+    function loadLuluPresets() {
+        return fetch('/presets.json', { cache:'no-store' })
+            .then(function(res) {
+                if (!res.ok) throw new Error('Unable to read presets');
+                return res.json();
+            })
+            .then(function(data) {
+                var presets = [];
+
+                Object.keys(data || {}).forEach(function(key) {
+                    var id = parseInt(key, 10);
+                    if (!Number.isFinite(id) || id < 1 || id > 250) return;
+
+                    var item = data[key];
+                    if (!item || typeof item !== 'object') return;
+
+                    var name = typeof item.n === 'string' ? item.n.trim() : '';
+                    if (!name) name = 'Preset ' + id;
+
+                    presets.push({ id:id, name:name });
+                });
+
+                presets.sort(function(a, b) { return a.id - b.id; });
+                luluPresetList = presets;
+                return presets;
+            });
+    }
+
+    function fillLuluPresetSelect(index) {
+        var select = document.getElementById('luluPresetSelect' + index);
+        if (!select) return;
+
+        select.innerHTML = '';
+        var configuredPreset = parseInt(luluButtons[index].preset, 10);
+        var configuredExists = false;
+
+        luluPresetList.forEach(function(preset) {
+            var option = document.createElement('option');
+            option.value = String(preset.id);
+            option.textContent = preset.name + '  (#' + preset.id + ')';
+
+            if (preset.id === configuredPreset) {
+                option.selected = true;
+                configuredExists = true;
+            }
+
+            select.appendChild(option);
+        });
+
+        if (!configuredExists && configuredPreset >= 1) {
+            var missing = document.createElement('option');
+            missing.value = String(configuredPreset);
+            missing.textContent = 'Preset ' + configuredPreset + ' (not currently saved)';
+            missing.selected = true;
+            select.insertBefore(missing, select.firstChild);
+        }
+
+        if (!select.options.length) {
+            var empty = document.createElement('option');
+            empty.value = '';
+            empty.textContent = 'No saved presets found';
+            select.appendChild(empty);
+        }
+    }
+
+    function fillLuluConfigForm() {
+        for (var i = 0; i < 4; i++) {
+            var input = document.getElementById('luluLabelInput' + i);
+            if (input) input.value = luluButtons[i].label || '';
+            fillLuluPresetSelect(i);
+        }
+    }
+
+    function luluPresetChanged(index) {
+        var select = document.getElementById('luluPresetSelect' + index);
+        var input = document.getElementById('luluLabelInput' + index);
+        if (!select || !input || select.selectedIndex < 0) return;
+
+        var current = input.value.trim();
+        if (!current || /^Preset\s+\d+$/i.test(current)) {
+            var preset = luluPresetList.find(function(item) {
+                return item.id === parseInt(select.value, 10);
+            });
+            if (preset) input.value = preset.name.substring(0, 24);
+        }
+    }
+
+    function openLuluConfig() {
+        var modal = document.getElementById('luluConfigModal');
+        var status = document.getElementById('luluConfigStatus');
+        if (!modal) return;
+
+        if (status) status.textContent = 'Loading presets from this controller...';
+        modal.style.display = 'flex';
+
+        Promise.all([loadLuluConfig(), loadLuluPresets()])
+            .then(function() {
+                fillLuluConfigForm();
+                if (status) {
+                    status.textContent = luluPresetList.length
+                        ? ''
+                        : 'No saved presets were found. Create presets in WLED Setup first.';
+                }
+            })
+            .catch(function(err) {
+                console.error(err);
+                if (status) status.textContent = 'Could not load the preset list.';
+            });
+    }
+
+    function closeLuluConfig() {
+        var modal = document.getElementById('luluConfigModal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    function saveLuluConfig() {
+        var status = document.getElementById('luluConfigStatus');
+        var saveButton = document.getElementById('luluSaveButton');
+        var nextButtons = [];
+
+        for (var i = 0; i < 4; i++) {
+            var input = document.getElementById('luluLabelInput' + i);
+            var select = document.getElementById('luluPresetSelect' + i);
+            var preset = select ? parseInt(select.value, 10) : NaN;
+            var label = input ? input.value.trim().substring(0, 24) : '';
+
+            if (!Number.isFinite(preset) || preset < 1 || preset > 250) {
+                if (status) status.textContent = 'Please choose a preset for all four buttons.';
+                return;
+            }
+
+            if (!label) {
+                var selected = luluPresetList.find(function(item) {
+                    return item.id === preset;
+                });
+                label = selected ? selected.name.substring(0, 24) : ('Preset ' + preset);
+            }
+
+            nextButtons.push({ label:label, preset:preset });
+        }
+
+        if (status) status.textContent = 'Saving to controller...';
+        if (saveButton) saveButton.disabled = true;
+
+        fetch('/json/state', {
+            method:'POST',
+            headers:{ 'Content-Type':'application/json' },
+            body:JSON.stringify({
+                LULU:{ buttons:nextButtons }
+            })
+        })
+        .then(function(res) {
+            if (!res.ok) throw new Error('Controller rejected the save');
+            return new Promise(function(resolve) { setTimeout(resolve, 700); });
+        })
+        .then(function() {
+            return fetch('/json/state', { cache:'no-store' });
+        })
+        .then(function(res) {
+            if (!res.ok) throw new Error('Unable to verify saved configuration');
+            return res.json();
+        })
+        .then(function(state) {
+            if (!state || !state.LULU || !Array.isArray(state.LULU.buttons)) {
+                throw new Error('LULU controller module is not installed');
+            }
+
+            normaliseLuluButtons(state.LULU.buttons);
+
+            if (status) status.textContent = 'Saved on this controller.';
+            setTimeout(function() {
+                closeLuluConfig();
+                if (status) status.textContent = '';
+            }, 650);
+        })
+        .catch(function(err) {
+            console.error(err);
+            if (status) {
+                status.textContent = err.message === 'LULU controller module is not installed'
+                    ? 'LULU controller module is not installed in this firmware.'
+                    : 'Could not save the button configuration.';
+            }
+        })
+        .finally(function() {
+            if (saveButton) saveButton.disabled = false;
+        });
+    }
+
     function hideLulu() {
         var lulu = document.getElementById('luluPage');
         var back = document.getElementById('luluBackButton');
+
+        closeLuluConfig();
 
         if (lulu) lulu.style.setProperty('display', 'none', 'important');
         if (back) back.style.display = 'block';
@@ -681,27 +1110,20 @@
         document.documentElement.style.overflow = 'hidden';
     }
 
-    // Open the full built-in WLED UI.
     function openSetup() {
         hideLulu();
     }
 
-    // Navigate completely away from the combined dashboard page.
-    // This avoids the fixed LULU overlay being retained by the mobile WebView.
     function openDeviceSettings() {
         hideLulu();
-
-        // Give the WebView one rendering frame to remove the overlay
-        // before loading the WLED settings page.
         requestAnimationFrame(function() {
             window.location.assign('/settings');
         });
     }
 
-    // Only show the dashboard automatically when THIS page is loaded at root.
-    // Do not use pageshow restoration because some mobile WebViews restore the
-    // previous page while navigating to WLED settings.
     window.addEventListener('load', function() {
+        loadLuluConfig();
+
         if (window.location.pathname === '/' || window.location.pathname.endsWith('/index.htm')) {
             showLulu();
         }

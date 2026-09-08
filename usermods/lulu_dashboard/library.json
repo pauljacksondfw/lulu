@@ -1,0 +1,15 @@
+{
+  "name": "LULU Dashboard",
+  "version": "1.0.0",
+  "description": "Persistent dashboard button labels and WLED preset assignments for the LULU Lighting Dashboard.",
+  "frameworks": [
+    "arduino"
+  ],
+  "platforms": [
+    "espressif32",
+    "espressif8266"
+  ],
+  "build": {
+    "libArchive": false
+  }
+}
