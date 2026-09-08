@@ -26,7 +26,7 @@ const packageJson = require("../package.json");
 // Export functions for testing
 module.exports = { isFileNewerThan, isAnyFileInFolderNewerThan };
 
-const output = ["wled00/html_ui.h", "wled00/html_pixart.h", "wled00/html_cpal.h", "wled00/html_edit.h", "wled00/html_pxmagic.h", "wled00/html_pixelforge.h", "wled00/html_settings.h", "wled00/html_other.h", "wled00/js_iro.h", "wled00/js_omggif.h"]
+const output = ["wled00/html_ui.h", "wled00/html_wheel.h", "wled00/html_pixart.h", "wled00/html_cpal.h", "wled00/html_edit.h", "wled00/html_pxmagic.h", "wled00/html_pixelforge.h", "wled00/html_settings.h", "wled00/html_other.h", "wled00/js_iro.h", "wled00/js_omggif.h"]
 
 // \x1b[34m is blue, \x1b[36m is cyan, \x1b[0m is reset
 const wledBanner = `
@@ -252,6 +252,7 @@ if (isAlreadyBuilt("wled00/data") && process.argv[2] !== '--force' && process.ar
 }
 
 writeHtmlGzipped("wled00/data/index.htm", "wled00/html_ui.h", 'index');
+writeHtmlGzipped("wled00/data/wheel.htm", "wled00/html_wheel.h", 'wheel');
 writeHtmlGzipped("wled00/data/pixart/pixart.htm", "wled00/html_pixart.h", 'pixart');
 writeHtmlGzipped("wled00/data/pxmagic/pxmagic.htm", "wled00/html_pxmagic.h", 'pxmagic');
 writeHtmlGzipped("wled00/data/pixelforge/pixelforge.htm", "wled00/html_pixelforge.h", 'pixelforge', false); // do not inline css

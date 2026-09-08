@@ -4,6 +4,7 @@
   #include "ota_update.h"  
 #endif
 #include "html_ui.h"
+#include "html_wheel.h"
 #include "html_settings.h"
 #include "html_other.h"
 #include "js_iro.h"
@@ -620,6 +621,20 @@ void initServer()
     request->send_P(200, FPSTR(CONTENT_TYPE_HTML), PAGE_dmxmap, dmxProcessor);
   });
 #endif
+
+ // Original WLED controls
+  server.on(F("/wheel"), HTTP_GET, [](AsyncWebServerRequest *request) {
+    handleStaticContent(request, F("/wheel.htm"), 200,
+                        FPSTR(CONTENT_TYPE_HTML),
+                        PAGE_wheel, PAGE_wheel_length);
+  });
+
+  // Also support the .htm URL
+  server.on(F("/wheel.htm"), HTTP_GET, [](AsyncWebServerRequest *request) {
+    handleStaticContent(request, F("/wheel.htm"), 200,
+                        FPSTR(CONTENT_TYPE_HTML),
+                        PAGE_wheel, PAGE_wheel_length);
+  });
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     if (captivePortal(request)) return;
