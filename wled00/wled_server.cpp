@@ -4,7 +4,6 @@
   #include "ota_update.h"  
 #endif
 #include "html_ui.h"
-#include "html_wheel.h"
 #include "html_settings.h"
 #include "html_other.h"
 #include "js_iro.h"
