@@ -622,20 +622,6 @@ void initServer()
   });
 #endif
 
- // Original WLED controls
-  server.on(F("/wheel"), HTTP_GET, [](AsyncWebServerRequest *request) {
-    handleStaticContent(request, F(""), 200,
-                        FPSTR(CONTENT_TYPE_HTML),
-                        PAGE_wheel, PAGE_wheel_length);
-  });
-
-  // Also support the .htm URL
-  server.on(F("/wheel.htm"), HTTP_GET, [](AsyncWebServerRequest *request) {
-    handleStaticContent(request, F("/wheel.htm"), 200,
-                        FPSTR(CONTENT_TYPE_HTML),
-                        PAGE_wheel, PAGE_wheel_length);
-  });
-
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     if (captivePortal(request)) return;
     if (!showWelcomePage || request->hasArg(F("sliders"))) {

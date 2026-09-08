@@ -252,7 +252,6 @@ if (isAlreadyBuilt("wled00/data") && process.argv[2] !== '--force' && process.ar
 }
 
 writeHtmlGzipped("wled00/data/index.htm", "wled00/html_ui.h", 'index');
-writeHtmlGzipped("wled00/data/wheel.htm", "wled00/html_wheel.h", 'wheel');
 writeHtmlGzipped("wled00/data/pixart/pixart.htm", "wled00/html_pixart.h", 'pixart');
 writeHtmlGzipped("wled00/data/pxmagic/pxmagic.htm", "wled00/html_pxmagic.h", 'pxmagic');
 writeHtmlGzipped("wled00/data/pixelforge/pixelforge.htm", "wled00/html_pixelforge.h", 'pixelforge', false); // do not inline css
