@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, viewport-fit=cover">
 	<meta charset="utf-8">
 	<meta name="theme-color" content="#222222">
 	<meta content="yes" name="apple-mobile-web-app-capable">
@@ -21,20 +21,39 @@
         --lulu-line:#e2e4e7;
         --lulu-brand-blue:#323c5a;
 
-        position:fixed;
-        inset:0;
-        z-index:100000;
-        overflow:auto;
+        position:fixed !important;
+        top:0 !important;
+        left:0 !important;
+        right:auto !important;
+        bottom:auto !important;
+        width:100vw !important;
+        height:100vh !important;
+        height:100dvh !important;
+        min-height:100vh !important;
+
+        z-index:100000 !important;
+        overflow-x:hidden !important;
+        overflow-y:auto !important;
+        -webkit-overflow-scrolling:touch;
+        overscroll-behavior:contain;
+
         display:flex;
         justify-content:center;
-        align-items:center;
-        padding:24px 16px;
+        align-items:flex-start;
+
+        padding-left:16px;
+        padding-right:16px;
+        padding-top:max(24px, env(safe-area-inset-top));
+        padding-bottom:max(24px, env(safe-area-inset-bottom));
+
         color:var(--lulu-ink);
         font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+
         background-color:var(--lulu-bg);
         background-image:
             repeating-linear-gradient(45deg,transparent 0,transparent 23px,rgba(51,61,87,.025) 23px,rgba(51,61,87,.025) 24px),
             repeating-linear-gradient(-45deg,transparent 0,transparent 23px,rgba(51,61,87,.025) 23px,rgba(51,61,87,.025) 24px);
+
         box-sizing:border-box;
     }
 
@@ -46,6 +65,7 @@
     }
 
     #luluPage .app-container {
+        flex:0 0 auto;
         width:100%;
         max-width:480px;
         background:var(--lulu-surface);
@@ -162,8 +182,8 @@
 
     #luluBackButton {
         position:fixed;
-        top:12px;
-        right:12px;
+        top:max(12px, env(safe-area-inset-top));
+        right:max(12px, env(safe-area-inset-right));
         z-index:99999;
         display:none;
         padding:10px 14px;
@@ -237,7 +257,7 @@
     <!-- Administrative Paths (Single-line items stacked sequentially) -->
     <div class="footer-navigation">
         <a href="#" onclick="showWled(); return false;" class="wide-link">Setup V1.0</a>
-        <a href="/settings" class="wide-link">Device Settings</a>
+        <a href="/settings" class="wide-link" onclick="window.location.href='/settings'; return false;">Device Settings</a>
     </div>
 </div>
 </div>
@@ -630,18 +650,43 @@
             });
     }
 
-    // Show the original WLED interface.
     function showWled() {
-        document.getElementById('luluPage').style.display = 'none';
-        document.getElementById('luluBackButton').style.display = 'block';
-    }
+        var lulu = document.getElementById('luluPage');
+        var back = document.getElementById('luluBackButton');
 
-    // Return to the LULU dashboard.
-    function showLulu() {
-        document.getElementById('luluBackButton').style.display = 'none';
-        document.getElementById('luluPage').style.display = 'flex';
+        if (lulu) lulu.style.setProperty('display', 'none', 'important');
+        if (back) back.style.display = 'block';
+
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
+
         window.scrollTo(0, 0);
     }
+
+    function showLulu() {
+        var lulu = document.getElementById('luluPage');
+        var back = document.getElementById('luluBackButton');
+
+        if (back) back.style.display = 'none';
+        if (lulu) {
+            lulu.style.setProperty('display', 'flex', 'important');
+            lulu.scrollTop = 0;
+        }
+
+        document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = 'hidden';
+    }
+
+    window.addEventListener('load', function() {
+        showLulu();
+    });
+
+    window.addEventListener('pageshow', function() {
+        var lulu = document.getElementById('luluPage');
+        if (lulu && lulu.style.display !== 'none') {
+            showLulu();
+        }
+    });
 </script>
 
 <script src="rangetouch.js"></script>
