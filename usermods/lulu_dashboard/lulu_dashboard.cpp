@@ -62,6 +62,10 @@ class LULUDashboardUsermod : public Usermod {
     }
 
   public:
+    // WLED 0.16.1's Usermod base class requires setup() and loop().
+    // This module has no hardware to initialize, so setup() is intentionally empty.
+    void setup() override {}
+
     void loop() override {
       if (!savePending) return;
       if ((long)(millis() - saveAfter) < 0) return;
