@@ -1,390 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
-	<meta charset="utf-8">
-	<meta name="theme-color" content="#222222">
-	<meta content="yes" name="apple-mobile-web-app-capable">
-	<link rel="shortcut icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAGACGAAAAFgAAAIlQTkcNChoKAAAADUlIRFIAAAAQAAAAEAgGAAAAH/P/YQAAAE1JREFUOI1j/P//PwOxgNGeAUMxE9G6cQCKDWAhpADZ2f8PMjBS3QW08QK20KaZC2gfC9hCnqouoNgARgY7zMxAyNlUdQHlXiAlO2MDAD63EVqNHAe0AAAAAElFTkSuQmCC"/>
-	<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAMAAAAKE/YAAAAANlBMVEUAAAAAKacAPv8APv8APv8APv8APv8AKacAQv8AJZsAKacAKacAPv8APv8AL8MAPv8APv8AQv/mTD7uAAAAEHRSTlMAf1mvpgzzka9/Vy3wnX9ic6GVaQAAAQhJREFUeNrt3EtuwkAQRdGGYAyYT9j/ZqN4GNkv9gSV4ZwVXJU8cVerGwAAAAAAUNTl9LXY6dJq6J/fiz37VsNuTfSu1SB6hmjRgWjRgWjRgWjRgWjRgehf5y1G70r/2Ha3w5T7foWhvVg3Pbxzq6w7lv5MRa8iWnQgWnQgWnQgWnQgWnQgenQtHT3spzxqT7p/+/MX0aJFj0SLDkSLDkSLDkSLDkSL/s/n7OhXRR8fNXb0q6KvrbSZSXetMtEzRIsORIsORIsORIsORIsORIdr/i+PHvYr3A9Tbsui7egn+2pf83//ky7RokWPRIsORIsORIsORIsORG/2gbhNPsUHAAAAAAD89QMg+PZb+jO0tAAAAABJRU5ErkJggg==" sizes="180x180"/>
-	<title>WLED</title>
-	<link rel="stylesheet" href="index.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LULU Lighting Dashboard</title>
+    <style>
+        :root { --bg:#f4f5f6; --surface:#fff; --ink:#25282c; --muted:#777d84; --line:#e2e4e7; }
+        * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+        body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background-color:var(--bg); background-image:repeating-linear-gradient(45deg,transparent 0,transparent 23px,rgba(51,61,87,.025) 23px,rgba(51,61,87,.025) 24px),repeating-linear-gradient(-45deg,transparent 0,transparent 23px,rgba(51,61,87,.025) 23px,rgba(51,61,87,.025) 24px); min-height:100vh; display:flex; justify-content:center; align-items:center; padding:24px 16px; }
+        .app-container { width:100%; max-width:480px; background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:32px 28px; box-shadow:0 12px 40px rgba(25,30,35,.045),0 2px 8px rgba(25,30,35,.025); }
+        :root { --brand-blue:#323c5a; }
+        .brand-image { display:block; width:100%; max-width:250px; height:auto; margin:0 auto; }
+        .brand-header { position:relative; text-align:center; margin-bottom:32px; padding-top:48px; }
+        .brand-logo { font-size:38px; font-weight:750; letter-spacing:-1.8px; color:var(--ink); text-transform:lowercase; margin-bottom:5px; }
+        .brand-subtitle { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:2.8px; font-weight:650; }
+        
+        button { font-family:inherit; }
+        .power-btn { position:absolute; top:0; right:0; width:46px; height:46px; display:flex; align-items:center; justify-content:center; background:#f5f6f7; border:1px solid var(--line); border-radius:12px; color:var(--brand-blue); cursor:pointer; transition:background .2s,border-color .2s; }
+        .preset-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin-bottom:30px; }
+        .preset-btn { aspect-ratio:1/1; background:#fafafa; border:1px solid var(--line); border-radius:12px; color:var(--ink); display:flex; flex-direction:column; justify-content:center; align-items:center; cursor:pointer; transition:background .2s,border-color .2s,transform .15s; padding:16px; }
+        .preset-btn .icon { font-size:26px; margin-bottom:12px; filter:grayscale(1); opacity:.72; }
+        .preset-btn .label { font-size:14px; font-weight:600; color:var(--brand-blue); }
+        .footer-navigation { display:flex; flex-direction:column; gap:10px; padding-top:22px; border-top:1px solid var(--line); }
+        .wide-link { display:block; width:100%; padding:14px; text-align:center; background:#fff; border:1px solid var(--line); border-radius:9px; color:var(--brand-blue); font-size:13px; font-weight:600; text-decoration:none; transition:background .2s,border-color .2s,transform .15s; }
+        .power-btn:active,.preset-btn:active,.wide-link:active { transform:scale(.985); }
+        :focus-visible { outline:2px solid var(--brand-blue); outline-offset:3px; }
+        @media (hover:hover) { .power-btn:hover { background:#e7e9eb; border-color:#c8ccd0; } .preset-btn:hover,.wide-link:hover { background:#f3f4f5; border-color:#cbd0d4; } }
+        @media (max-width:360px) { .app-container { padding:26px 18px; } .preset-grid { gap:10px; } }
+        @media (prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none!important; } }
+    </style>
 </head>
 <body>
 
-<div id="devBanner">⚠ DEVELOPMENT BUILD — WORK IN PROGRESS — NOT FOR PRODUCTION USE</div>
-<div id="cv" class="overlay">Loading WLED UI...</div>
-<noscript><div class="overlay" style="opacity:1;">Sorry, WLED UI needs JavaScript!</div></noscript>
-<div id="bg"></div>
+<div class="app-container">
+    
+    <div class="brand-header">
+        <button class="power-btn" type="button" onclick="sendWled('T=2')" aria-label="Toggle system power" title="Toggle system power">
+            <svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true">
+                <path d="M12 2.5v9"/><path d="M6.1 5.9a9 9 0 1 0 11.8 0"/>
+            </svg>
+        </button>
+        <img class="brand-image" src="data:image/png;base64,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" alt="LULU Outdoor Lighting">
+    </div>
+    
+    <!-- Primary Controller Power Switch -->
+    
+    <!-- 2x2 Preset Grid Matrix -->
+    <div class="preset-grid">
+        <button class="preset-btn" onclick="sendWled('PL=1')">
+            <span class="icon">✨</span>
+            <span class="label">Preset 1</span>
+        </button>
+        <button class="preset-btn" onclick="sendWled('PL=2')">
+            <span class="icon">🌅</span>
+            <span class="label">Preset 2</span>
+        </button>
+        <button class="preset-btn" onclick="sendWled('PL=3')">
+            <span class="icon">🌌</span>
+            <span class="label">Preset 3</span>
+        </button>
+        <button class="preset-btn" onclick="sendWled('PL=4')">
+            <span class="icon">🌊</span>
+            <span class="label">Preset 4</span>
+        </button>
+    </div>
 
-<div class="wrapper" id="top">
-	<div class="tab top">
-		<div class="btnwrap">
-			<button id="buttonPower" onclick="togglePower()" class="tgl"><i class="icons">&#xe08f;</i><p class="tab-label">Power</p></button>
-			<button id="buttonNl" onclick="toggleNl()"><i class="icons">&#xe2a2;</i><p class="tab-label">Timer</p></button>
-			<button id="buttonSync" onclick="toggleSync()"><i class="icons">&#xe116;</i><p class="tab-label">Sync</p></button>
-			<button id="buttonSr" onclick="toggleLiveview()"><i class="icons">&#xe410;</i><p class="tab-label">Peek</p></button>
-			<button id="buttonI" onclick="toggleInfo()"><i class="icons">&#xe066;</i><p class="tab-label">Info</p></button>
-			<button id="buttonNodes" onclick="toggleNodes()"><i class="icons">&#xe22d;</i><p class="tab-label">Nodes</p></button>
-			<button onclick="window.location.href=getURL('/settings');"><i class="icons">&#xe0a2;</i><p class="tab-label">Config</p></button>
-			<button id="buttonPcm" onclick="togglePcMode(true)"><i class="icons">&#xe23d;</i><p class="tab-label">PC Mode</p></button>
-		</div>
-		<div id="briwrap">
-			<p class="hd">Brightness</p>
-			<div class="slider">
-				<i class="icons slider-icon" onclick="tglTheme()" style="transform: translateY(2px);">&#xe2a6;</i>
-				<div class="sliderwrap il">
-					<input id="sliderBri" onchange="setBri()" oninput="updateTrail(this)" max="255" min="1" type="range" value="128" />
-					<div class="sliderdisplay"></div>
-				</div>
-				<output class="sliderbubble"></output>
-			</div>
-		</div>
-		<iframe id="liveview" src="about:blank"></iframe>
-	</div>
+    <!-- Administrative Paths (Single-line items stacked sequentially) -->
+    <div class="footer-navigation">
+        <a href="/wheel" class="wide-link">Setup & Core Interface</a>
+        <a href="/settings" class="wide-link">Device Settings</a>
+    </div>
 </div>
 
-<div class ="container">
-	<div id="Colors" class="tabcontent">
-		<div id="picker" class="noslide"></div>
-		<div id="hwrap" class="slider">
-			<div title="Hue" class="sliderwrap il">
-				<input id="sliderH" class="noslide" oninput="fromH()" onchange="setColor(0)" max="359" min="0" type="range" value="0" step="any">
-				<div class="sliderdisplay" style="background: linear-gradient(90deg, #f00 2%, #ff0 19%, #0f0 35%, #0ff 52%, #00f 68%, #f0f 85%, #f00)"></div>
-			</div>
-		</div>
-		<div id="swrap" class="slider">
-			<div title="Saturation" class="sliderwrap il">
-				<input id="sliderS" class="noslide" oninput="fromS()" onchange="setColor(0)" max="100" min="0" type="range" value="100" step="any">
-				<div class="sliderdisplay" style="background: linear-gradient(90deg, #aaa 0%, #f00)"></div>
-			</div>
-		</div>
-		<div id="vwrap" class="slider">
-			<div title="Value/Brightness" class="sliderwrap il">
-				<input id="sliderV" class="noslide" oninput="fromV()" onchange="setColor(0)" max="100" min="0" type="range" value="100" step="any" />
-				<div class="sliderdisplay"></div>
-			</div>
-		</div>
-		<div id="kwrap" class="slider">
-			<div title="Kelvin/Temperature" class="sliderwrap il">
-				<input id="sliderK" class="noslide" oninput="fromK()" onchange="setColor(0)" max="10091" min="1900" type="range" value="6550" />
-				<div class="sliderdisplay"></div>
-			</div>
-		</div>
-		<div id="rgbwrap">
-			<div id="rwrap" class="slider">
-				<div title="Red channel" class="sliderwrap il">
-					<input id="sliderR" class="noslide" oninput="fromRgb()" onchange="setColor(0)" max="255" min="0" type="range" value="128" />
-					<div class="sliderdisplay"></div>
-				</div>
-			</div>
-			<div id="gwrap" class="slider">
-				<div title="Green channel" class="sliderwrap il">
-					<input id="sliderG" class="noslide" oninput="fromRgb()" onchange="setColor(0)" max="255" min="0" type="range" value="128" />
-					<div class="sliderdisplay"></div>
-				</div>
-			</div>
-			<div id="bwrap" class="slider">
-				<div title="Blue channel" class="sliderwrap il">
-					<input id="sliderB" class="noslide" oninput="fromRgb()" onchange="setColor(0)" max="255" min="0" type="range" value="128" />
-					<div class="sliderdisplay"></div>
-				</div>
-			</div>
-		</div>
-		<div id="wwrap" class="slider">
-			<div id="whibri" title="White channel" class="sliderwrap il">
-				<input id="sliderW" class="noslide" oninput="fromW()" onchange="setColor(0)" max="255" min="0" type="range" value="128" />
-				<div class="sliderdisplay"></div>
-			</div>
-		</div>
-		<div id="wbal" class="slider">
-			<div title="White balance" class="sliderwrap il">
-				<input id="sliderA" class="noslide" onchange="setBalance(this.value)" max="255" min="0" type="range" value="128" />
-				<div class="sliderdisplay"></div>
-			</div>
-		</div>
-		<div id="qcs-w">
-			<div class="qcs" onclick="pC('#ff0000');" style="background-color:#ff0000;"></div>
-			<div class="qcs" onclick="pC('#ffa000');" style="background-color:#ffa000;"></div>
-			<div class="qcs" onclick="pC('#ffc800');" style="background-color:#ffc800;"></div>
-			<div class="qcs" onclick="pC('#ffe0a0');" style="background-color:#ffe0a0;"></div>
-			<div class="qcs qcsw" onclick="pC('#ffffff');" style="background-color:#ffffff;"></div>
-			<div class="qcs qcsb" onclick="pC('#000000');" style="background-color:#000000;"></div><br>
-			<div class="qcs" onclick="pC('#ff00ff');" style="background-color:#ff00ff;"></div>
-			<div class="qcs" onclick="pC('#0000ff');" style="background-color:#0000ff;"></div>
-			<div class="qcs" onclick="pC('#00ffc8');" style="background-color:#00ffc8;"></div>
-			<div class="qcs" onclick="pC('#08ff00');" style="background-color:#08ff00;"></div>
-			<div class="qcs" onclick="pC('rnd');" title="Random" style="background:linear-gradient(to right, red, orange, yellow, green, blue, purple);transform: translateY(-11px);">R</div>
-		</div>
-		<div id="csl">
-			<button id="csl0" title="Select slot" class="btn" onclick="selectSlot(0);" data-r="0" data-g="0" data-b="0" data-w="0">1</button>
-			<button id="csl1" title="Select slot" class="btn" onclick="selectSlot(1);" data-r="0" data-g="0" data-b="0" data-w="0">2</button>
-			<button id="csl2" title="Select slot" class="btn" onclick="selectSlot(2);" data-r="0" data-g="0" data-b="0" data-w="0">3</button>
-		</div>
-		<p class="labels h" id="cslLabel"></p>
-		<div id="hexw">
-			<i class="icons sel-icon" onclick="tglRgb()">&#xe22d;</i>
-			<input id="hexc" title="Hex RGB" type="text" class="noslide" onkeydown="hexEnter()" autocomplete="off" maxlength="8" />
-			<button id="hexcnf" class="btn btn-xs" onclick="fromHex();"><i class="icons btn-icon">&#xe390;</i></button>
-		</div>
+<script>
+    // Asynchronous network bridge connecting elements directly to the host API
+    function sendWled(query) {
+        fetch('/win&' + query)
+        .then(res => { if (!res.ok) console.warn('Signal route dropped'); })
+        .catch(err => console.error('Connection timed out:', err));
+    }
+</script>
 
-		<div style="padding: 12px 0; display:flex; justify-content:center; gap:16px;" id="btns">
-			<div>
-				<button class="btn btn-xs" title="File editor" type="button" onclick="window.location.href=getURL('/edit')">
-				<i class="icons btn-icon">&#xe901;</i>
-				</button>
-				<div class="iconlabel">Files</div>
-			</div>
-			<div>
-				<button class="btn btn-xs" title="PixelForge" type="button" onclick="window.location.href=getURL('/pixelforge.htm')">
-				<i class="icons btn-icon">&#xe900;</i>
-				</button>
-				<div class="iconlabel">PixelForge</div>
-			</div>
-			<div>
-				<button class="btn btn-xs" title="Custom palettes" type="button" onclick="window.location.href=getURL('/cpal.htm')">
-				<i class="icons btn-icon">&#xe2b3;</i>
-				</button>
-				<div class="iconlabel">Palettes</div>
-			</div>
-		</div>
-
-		<p class="labels hd" id="pall"><i class="icons sel-icon" onclick="tglHex()">&#xe2b3;</i> Color palette</p>
-		<div id="palw" class="il">
-			<div class="staytop fnd">
-				<input type="text" placeholder="Search" oninput="search(this,'pallist')" onfocus="search(this,'pallist')" />
-				<i class="icons clear-icon" onclick="clean(this)">&#xe38f;</i>
-				<i class="icons search-icon">&#xe0a1;</i>
-			</div>
-			<div id="pallist" class="list">
-				<div class="lstI">
-					<label class="radio schkl" onclick="loadPalettes()">
-						<div class="lstIcontent">
-							<span class="lstIname">
-								Loading...
-							</span>
-						</div>
-					</label>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div id="Effects" class="tabcontent">
-		<div id="fx">
-			<p class="labels hd" id="modeLabel">Effect mode</p>
-			<div class="staytop fnd" id="fxFind" onmousedown="preventBlur(event);">
-				<input type="text" placeholder="Search" oninput="search(this,'fxlist')" onfocus="filterFocus(event);search(this,'fxlist');" onblur="filterFocus(event);">
-				<i class="icons clear-icon" onclick="clean(this);">&#xe38f;</i>
-				<i class="icons search-icon" style="cursor:pointer;">&#xe0a1;</i>
-				<div id="filters" class="filter fade">
-					<label id="filterPal" title="Uses palette" class="check fchkl">&#x1F3A8;
-						<input type="checkbox" data-flt="&#x1F3A8;" onchange="filterFx();">
-						<span class="checkmark"></span>
-					</label>
-					<label id="filter0D" title="Single pixel" class="check fchkl">&#8226;
-						<input type="checkbox" data-flt="&#8226;" onchange="filterFx();">
-						<span class="checkmark"></span>
-					</label>
-					<label id="filter1D" title="1D" class="check fchkl">&#8942;
-						<input type="checkbox" data-flt="&#8942;" onchange="filterFx();">
-						<span class="checkmark"></span>
-					</label>
-					<label id="filter2D" title="2D" class="check fchkl">&#9638;
-						<input type="checkbox" data-flt="&#9638;" onchange="filterFx();">
-						<span class="checkmark"></span>
-					</label>
-					<label id="filterVol" title="Volume" class="check fchkl">&#9834;
-						<input type="checkbox" data-flt="&#9834;" onchange="filterFx();">
-						<span class="checkmark"></span>
-					</label>
-					<label id="filterFreq" title="Frequency" class="check fchkl">&#9835;
-						<input type="checkbox" data-flt="&#9835;" onchange="filterFx();">
-						<span class="checkmark"></span>
-					</label>
-				</div>
-			</div>
-			<div id="fxlist" class="list">
-				<div class="lstI">
-					<label class="radio schkl" onclick="loadFX()">
-						<div class="lstIcontent">
-							<span class="lstIname">
-								Loading...
-							</span>
-						</div>
-					</label>
-				</div>
-			</div>
-		</div>
-		<div id="sliders">
-			<div id="slider0" class="slider">
-				<i class="icons slider-icon" title="Freeze" onclick="tglFreeze()">&#xe325;</i>
-				<div title="Effect speed" class="sliderwrap il">
-					<input id="sliderSpeed" class="noslide" onchange="setSpeed()" oninput="updateTrail(this)" max="255" min="0" type="range" value="128" />
-					<div class="sliderdisplay"></div>
-				</div>
-				<output class="sliderbubble"></output>
-			</div>
-			<div id="slider1" class="slider">
-				<i class="icons slider-icon" title="Toggle labels" onclick="tglLabels()">&#xe409;</i>
-				<div title="Effect intensity" class="sliderwrap il">
-					<input id="sliderIntensity" class="noslide" onchange="setIntensity()" oninput="updateTrail(this)" max="255" min="0" type="range" value="128" />
-					<div class="sliderdisplay"></div>
-				</div>
-				<output class="sliderbubble"></output>
-			</div>
-			<div id="slider2" class="slider hide">
-				<i class="icons slider-icon">&#xe410;</i>
-				<div title="Custom 1" class="sliderwrap il">
-					<input id="sliderC1" class="noslide" onchange="setCustom(1)" oninput="updateTrail(this)" max="255" min="0" type="range" value="0" />
-					<div class="sliderdisplay"></div>
-				</div>
-				<output class="sliderbubble"></output>
-			</div>
-			<div id="slider3" class="slider hide">
-				<i class="icons slider-icon">&#xe0a2;</i>
-				<div title="Custom 2" class="sliderwrap il">
-					<input id="sliderC2" class="noslide" onchange="setCustom(2)" oninput="updateTrail(this)" max="255" min="0" type="range" value="0" />
-					<div class="sliderdisplay"></div>
-				</div>
-				<output class="sliderbubble"></output>
-			</div>
-			<div id="slider4" class="slider hide">
-				<i class="icons slider-icon">&#xe0e8;</i>
-				<div title="Custom 3" class="sliderwrap il">
-					<input id="sliderC3" class="noslide" onchange="setCustom(3)" oninput="updateTrail(this)" max="31" min="0" type="range" value="0" />
-					<div class="sliderdisplay"></div>
-				</div>
-				<output class="sliderbubble"></output>
-			</div>
-			<div id="fxopt" class="option fade">
-				<label id="opt0" title="Check 1" class="check ochkl hide"><i class="icons">&#xe2b3;</i>
-					<input id="checkO1" type="checkbox" onchange="setOption(1, this.checked)">
-					<span class="checkmark"></span>
-				</label>
-				<label id="opt1" title="Check 2" class="check ochkl hide"><i class="icons">&#xe34b;</i>
-					<input id="checkO2" type="checkbox" onchange="setOption(2, this.checked)">
-					<span class="checkmark"></span>
-				</label>
-				<label id="opt2" title="Check 3" class="check ochkl hide"><i class="icons">&#xe04c;</i>
-					<input id="checkO3" type="checkbox" onchange="setOption(3, this.checked)">
-					<span class="checkmark"></span>
-				</label>
-			</div>
-		</div>
-	</div>
-
-	<div id="Segments" class="tabcontent">
-		<p class="labels hd" id="segLabel">Segments</p>
-		<div id="segcont">
-			Loading...
-		</div>
-		<div id="segutil" class="staybot">
-		</div>
-		<div id="segutil2">
-			<button class="btn btn-s" id="rsbtn" onclick="rSegs()">Reset segments</button>
-		</div>
-		<p>Transition: <input id="tt" type="number" min="0" max="65.5" step="0.1" value="0.7" onchange="parseFloat(this.value)===0?gId('bsp').classList.add('hide'):gId('bsp').classList.remove('hide');">&nbsp;s</p>
-		<div id="bsp" class="sel-p"><select id="bs" class="sel-ple" onchange="requestJson({'bs':parseInt(this.value)})">
-			<option value="0">Fade</option>
-			<option value="1">Fairy Dust</option>
-			<option value="2">Swipe right</option>
-			<option value="3">Swipe left</option>
-			<option value="16">Push right</option>
-			<option value="17">Push left</option>
-			<option value="4">Outside-in</option>
-			<option value="5">Inside-out</option>
-			<option value="6" data-type="2D">Swipe up</option>
-			<option value="7" data-type="2D">Swipe down</option>
-			<option value="8" data-type="2D">Open H</option>
-			<option value="9" data-type="2D">Open V</option>
-			<option value="18" data-type="2D">Push up</option>
-			<option value="19" data-type="2D">Push down</option>
-			<option value="10" data-type="2D">Swipe TL</option>
-			<option value="11" data-type="2D">Swipe TR</option>
-			<option value="12" data-type="2D">Swipe BR</option>
-			<option value="13" data-type="2D">Swipe BL</option>
-			<option value="14" data-type="2D">Circular Out</option>
-			<option value="15" data-type="2D">Circular In</option>
-		</select></div>
-		<p id="ledmap" class="hide"></p>
-	</div>
-
-	<div id="Presets" class="tabcontent">
-		<div id="pql">
-		</div>
-		<p class="labels hd">Presets</p>
-		<div class="staytop fnd" id="psFind">
-			<input type="text" placeholder="Search" oninput="search(this,'pcont')" onfocus="search(this,'pcont')" />
-			<i class="icons clear-icon" onclick="clean(this);">&#xe38f;</i>
-			<i class="icons search-icon">&#xe0a1;</i>
-		</div>
-		<div id="pcont" class="list">
-			<span onclick="loadPresets()">Loading...</span>
-		</div>
-		<div id="putil" class="staybot">
-		</div>
-	</div>
-</div>
-
-<div class="tab bot" id="bot">
-	<button class="tablinks" onclick="openTab(0)"><i class="icons">&#xe2b3;</i><p class="tab-label">Colors</p></button>
-	<button class="tablinks" onclick="openTab(1)"><i class="icons">&#xe23d;</i><p class="tab-label">Effects</p></button>
-	<button class="tablinks" onclick="openTab(2)"><i class="icons">&#xe34b;</i><p class="tab-label">Segments</p></button>
-	<button class="tablinks" onclick="openTab(3)"><i class="icons">&#xe04c;</i><p class="tab-label">Presets</p></button>
-</div>
-
-<div id="connind"></div>
-<div id="toast" onclick="clearErrorToast(100);"></div>
-<div id="namelabel" onclick="toggleNodes()"></div>
-<div id="info" class="modal">
-	<button class="btn btn-xs close" onclick="toggleInfo()"><i class="icons rot45">&#xe18a;</i></button>
-	<div id="imgw">
-		<img class="wi" alt="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB0AAAAFCAYAAAC5Fuf5AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABbSURBVChTlY9bDoAwDMNW7n9nwCipytQN4Z8tbrTHmDmF4oPzyldwRqp1SSdnV/NuZuzqerAByxXznBw3igkeFEfXyUuhK/yFM0CxJfyqXZEOc6/Sr9/bf7uIC5Nwd7orMvAPAAAAAElFTkSuQmCC" />
-	</div>
-	<div id="kv">Loading...</div><br>
-	<div>
-		<button class="btn ibtn" onclick="requestJson()">Refresh</button>
-		<button class="btn ibtn" onclick="toggleNodes()">Instance List</button>
-		<button class="btn ibtn" onclick="window.open(getURL('/update'),'_self');" id="updBt">Update WLED</button>
-		<button class="btn ibtn" id="resetbtn" onclick="cnfReset()">Reboot WLED</button>
-	</div>
-	<br>
-	<span class="h">Made with&#32;<span id="heart">&#10084;&#xFE0E;</span>&#32;by&#32;<a href="https://github.com/Aircoookie/" target="_blank">Aircoookie</a>&#32;and the&#32;<a href="https://wled.discourse.group/" target="_blank">WLED community</a></span>
-</div>
-
-<div id="nodes" class="modal">
-	<button class="btn btn-xs close" onclick="toggleNodes()"><i class="icons rot45">&#xe18a;</i></button>
-	<div id="ndlt">WLED instances</div>
-	<div id="kn">Loading...</div>
-	<div style="position:sticky;bottom:0;">
-		<button class="btn ibtn" onclick="loadNodes()">Refresh</button>
-	</div>
-</div>
-
-<div id="mlv2D" class="modal">
-	<div id="klv2D" style="width:100%; height:100%">Loading...</div>
-</div>
-
-<div id="rover" class="modal">
-	<i class="icons huge">&#xe410;</i><br>
-	<div id="lv">?</div><br><br>
-	To use built-in effects, use an override button below.<br>
-	You can return to realtime mode by pressing the star in the top left corner.<br>
-	<button class="btn ibtn" onclick="setLor(1)">Override once</button>
-	<button class="btn ibtn" onclick="setLor(2)">Override until reboot</button><br>
-	<span class="h">For best performance, it is recommended to turn off the streaming source when not in use.</span>
-</div>
-
-<i id="roverstar" class="icons huge" onclick="setLor(0)">&#xe410;</i><br>
-
-<!-- 
-	If you want to load iro.js and rangetouch.js as consecutive requests, you can do it like it was done in 0.14.0:
-	https://github.com/wled/WLED/blob/v0.14.0/wled00/data/index.htm
-	A more compact approach is implemented to load iro.js at the beginning of index.js.
--->
-<!--  <script src="iro.js"></script> NOTE: iro.js is loaded at the beginning of index.js -->
 <script src="rangetouch.js"></script>
 <script src="index.js"></script>
+
 </body>
 </html>
