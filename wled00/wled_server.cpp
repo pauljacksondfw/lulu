@@ -624,7 +624,7 @@ void initServer()
 
  // Original WLED controls
   server.on(F("/wheel"), HTTP_GET, [](AsyncWebServerRequest *request) {
-    handleStaticContent(request, F("/wheel.htm"), 200,
+    handleStaticContent(request, F(""), 200,
                         FPSTR(CONTENT_TYPE_HTML),
                         PAGE_wheel, PAGE_wheel_length);
   });
