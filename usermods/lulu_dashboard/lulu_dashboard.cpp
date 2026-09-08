@@ -66,10 +66,11 @@ class LULUDashboardUsermod : public Usermod {
       if (!savePending) return;
       if ((long)(millis() - saveAfter) < 0) return;
 
-      // WLED usermod guidance requires serializeConfig() to be called
-      // from loop(), not from the network/JSON callback.
+      // Ask WLED's main loop to persist cfg.json.
+      // In WLED 0.16.1 serializeConfig() requires a JsonObject argument,
+      // so the safe public mechanism here is to set the standard save flag.
       savePending = false;
-      serializeConfig();
+      configNeedsWrite = true;
     }
 
     void addToJsonState(JsonObject& root) override {
@@ -120,6 +121,10 @@ class LULUDashboardUsermod : public Usermod {
         savedLabels.add(labels[i]);
         savedPresets.add(presets[i]);
       }
+    }
+
+    uint16_t getId() override {
+      return USERMOD_ID_UNSPECIFIED;
     }
 
     bool readFromConfig(JsonObject& root) override {
