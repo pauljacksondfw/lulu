@@ -256,8 +256,8 @@
 
     <!-- Administrative Paths (Single-line items stacked sequentially) -->
     <div class="footer-navigation">
-        <a href="#" onclick="showWled(); return false;" class="wide-link">Setup V1.0</a>
-        <a href="/settings" class="wide-link" onclick="window.location.href='/settings'; return false;">Device Settings</a>
+        <a href="#" onclick="openSetup(); return false;" class="wide-link">Setup V1.0</a>
+        <a href="/settings" onclick="openDeviceSettings(); return false;" class="wide-link">Device Settings</a>
     </div>
 </div>
 </div>
@@ -650,7 +650,7 @@
             });
     }
 
-    function showWled() {
+    function hideLulu() {
         var lulu = document.getElementById('luluPage');
         var back = document.getElementById('luluBackButton');
 
@@ -659,8 +659,11 @@
 
         document.body.style.overflow = '';
         document.documentElement.style.overflow = '';
-
         window.scrollTo(0, 0);
+    }
+
+    function showWled() {
+        hideLulu();
     }
 
     function showLulu() {
@@ -668,6 +671,7 @@
         var back = document.getElementById('luluBackButton');
 
         if (back) back.style.display = 'none';
+
         if (lulu) {
             lulu.style.setProperty('display', 'flex', 'important');
             lulu.scrollTop = 0;
@@ -677,13 +681,28 @@
         document.documentElement.style.overflow = 'hidden';
     }
 
-    window.addEventListener('load', function() {
-        showLulu();
-    });
+    // Open the full built-in WLED UI.
+    function openSetup() {
+        hideLulu();
+    }
 
-    window.addEventListener('pageshow', function() {
-        var lulu = document.getElementById('luluPage');
-        if (lulu && lulu.style.display !== 'none') {
+    // Navigate completely away from the combined dashboard page.
+    // This avoids the fixed LULU overlay being retained by the mobile WebView.
+    function openDeviceSettings() {
+        hideLulu();
+
+        // Give the WebView one rendering frame to remove the overlay
+        // before loading the WLED settings page.
+        requestAnimationFrame(function() {
+            window.location.assign('/settings');
+        });
+    }
+
+    // Only show the dashboard automatically when THIS page is loaded at root.
+    // Do not use pageshow restoration because some mobile WebViews restore the
+    // previous page while navigating to WLED settings.
+    window.addEventListener('load', function() {
+        if (window.location.pathname === '/' || window.location.pathname.endsWith('/index.htm')) {
             showLulu();
         }
     });
