@@ -373,6 +373,16 @@
             transition:none!important;
         }
     }
+#luluPage .preset-btn{aspect-ratio:auto;height:92px;min-height:0;padding:9px}
+#luluPage .preset-grid{margin-bottom:14px}
+#luluPage .preset-btn .icon{font-size:23px;margin-bottom:5px}
+#luluPage .preset-btn .label{font-size:13px}
+#luluPage .lulu-emergency{width:100%;min-height:108px;margin-bottom:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;border:1px solid #e6a4aa;border-radius:12px;background:#fff1f2;color:#a83242;font:600 15px inherit;cursor:pointer}
+#luluPage .lulu-emergency .icon{font-size:28px;line-height:1}
+#luluPage .lulu-nav-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#luluPage .lulu-nav-row .wide-link{min-height:40px;padding:9px 8px;display:flex;align-items:center;justify-content:center;gap:7px;font-size:12px}
+#luluPage .lulu-nav-row svg{width:17px;height:17px;flex-shrink:0}
+#luluPage .footer-navigation{padding-top:15px}
 </style>
 
 </head>
@@ -413,11 +423,14 @@
         </button>
     </div>
 
+    <button class="lulu-emergency" type="button" onclick="runLuluEmergency()"><span class="icon" aria-hidden="true">⚠</span><span>Emergency</span></button>
     <!-- Administrative Paths (Single-line items stacked sequentially) -->
     <div class="footer-navigation">
         <a href="#" onclick="openLuluConfig(); return false;" class="wide-link lulu-config-link">Configure Buttons</a>
-        <a href="#" onclick="openSetup(); return false;" class="wide-link">Setup V1.0</a>
-        <a href="/settings" onclick="openDeviceSettings(); return false;" class="wide-link">Device Settings</a>
+        <div class="lulu-nav-row">
+            <a href="#" onclick="openSetup(); return false;" class="wide-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2" fill="white"/><circle cx="15" cy="12" r="2" fill="white"/><circle cx="8" cy="18" r="2" fill="white"/></svg>Lights</a>
+            <a href="/settings" onclick="openDeviceSettings(); return false;" class="wide-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l1.4 2.5 2.8.5 2.1-1.1 2.8 2.8-1.1 2.1.9 2.1L23 12l-2.1 1.1-.9 2.1 1.1 2.1-2.8 2.8-2.1-1.1-2.8.5L12 22l-1.4-2.5-2.8-.5-2.1 1.1-2.8-2.8 1.1-2.1-.9-2.1L1 12l2.1-1.1.9-2.1-1.1-2.1 2.8-2.8 2.1 1.1 2.8-.5z"/><circle cx="12" cy="12" r="3"/></svg>Device</a>
+        </div>
     </div>
 </div>
 
@@ -948,6 +961,11 @@
                 refreshLuluPowerState();
             }
         }, 2500);
+    }
+
+    function runLuluEmergency() {
+        sendWled('PL=5');
+        setTimeout(refreshLuluPowerState, 350);
     }
 
     function runLuluButton(index) {
