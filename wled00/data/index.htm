@@ -69,7 +69,7 @@
         width:100%;
         max-width:480px;
         background:var(--lulu-surface);
-        border:1px solid var(--lulu-line);
+        border:1px solid var(--lulu-brand-blue);
         border-radius:20px;
         padding:32px 28px;
         box-shadow:0 12px 40px rgba(25,30,35,.045),0 2px 8px rgba(25,30,35,.025);
@@ -123,10 +123,10 @@
     }
 
     #luluPage .power-btn.is-on {
-        background:#fff8e8;
-        border-color:#e6c66c;
-        color:#d38b00;
-        box-shadow:0 0 0 2px rgba(227,173,43,.10),0 0 16px rgba(227,173,43,.28);
+        background:#f1f5ff;
+        border-color:var(--lulu-brand-blue);
+        color:var(--lulu-brand-blue);
+        box-shadow:0 0 0 2px rgba(50,60,90,.10),0 0 18px rgba(50,60,90,.38);
     }
 
     #luluPage .power-btn.is-off {
@@ -355,7 +355,7 @@
 
     @media (hover:hover) {
         #luluPage .power-btn:hover:not(.is-on) { background:#e7e9eb; border-color:#c8ccd0; }
-        #luluPage .power-btn.is-on:hover { background:#fff3d4; border-color:#d9b24a; }
+        #luluPage .power-btn.is-on:hover { background:#e8efff; border-color:var(--lulu-brand-blue); }
         #luluPage .preset-btn:hover,
         #luluPage .wide-link:hover { background:#f3f4f5; border-color:#cbd0d4; }
         #luluBackButton:hover { filter:brightness(1.08); }
