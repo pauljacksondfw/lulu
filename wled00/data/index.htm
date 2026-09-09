@@ -377,8 +377,9 @@
 #luluPage .preset-grid{margin-bottom:14px}
 #luluPage .preset-btn .icon{font-size:23px;margin-bottom:5px}
 #luluPage .preset-btn .label{font-size:13px}
-#luluPage .lulu-emergency{width:100%;min-height:108px;margin-bottom:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;border:1px solid #e6a4aa;border-radius:12px;background:#fff1f2;color:#a83242;font:600 15px inherit;cursor:pointer}
+#luluPage .lulu-emergency{width:100%;min-height:108px;margin:8px 0 22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;border:1px solid #e6a4aa;border-radius:12px;background:#fff1f2;color:#a83242;font:600 15px inherit;cursor:pointer}
 #luluPage .lulu-emergency .icon{font-size:28px;line-height:1}
+#luluPage .lulu-emergency .label{font-size:15px;font-weight:700;color:#a83242}
 #luluPage .lulu-nav-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 #luluPage .lulu-nav-row .wide-link{min-height:40px;padding:8px 6px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:11.5px}
 #luluPage .lulu-nav-row svg{width:17px;height:17px;flex-shrink:0}
@@ -398,6 +399,8 @@
     width:14px;
     height:14px;
 }
+
+#luluPage .lulu-icon-select{font-size:20px}
 </style>
 
 </head>
@@ -421,24 +424,24 @@
     <!-- 2x2 Preset Grid Matrix -->
     <div class="preset-grid">
         <button class="preset-btn" type="button" onclick="runLuluButton(0)">
-            <span class="icon">✨</span>
+            <span class="icon" id="luluButtonIcon0">✨</span>
             <span class="label" id="luluButtonLabel0">Preset 1</span>
         </button>
         <button class="preset-btn" type="button" onclick="runLuluButton(1)">
-            <span class="icon">🌅</span>
+            <span class="icon" id="luluButtonIcon1">🌅</span>
             <span class="label" id="luluButtonLabel1">Preset 2</span>
         </button>
         <button class="preset-btn" type="button" onclick="runLuluButton(2)">
-            <span class="icon">🌌</span>
+            <span class="icon" id="luluButtonIcon2">🌌</span>
             <span class="label" id="luluButtonLabel2">Preset 3</span>
         </button>
         <button class="preset-btn" type="button" onclick="runLuluButton(3)">
-            <span class="icon">🌊</span>
+            <span class="icon" id="luluButtonIcon3">🌊</span>
             <span class="label" id="luluButtonLabel3">Preset 4</span>
         </button>
     </div>
 
-    <button class="lulu-emergency" type="button" onclick="runLuluEmergency()"><span class="icon" aria-hidden="true">⚠</span><span>Emergency</span></button>
+    <button class="lulu-emergency" type="button" onclick="runLuluButton(4)"><span class="icon" id="luluButtonIcon4" aria-hidden="true">⚠️</span><span class="label" id="luluButtonLabel4">Emergency</span></button>
     <!-- Administrative Paths (Single-line items stacked sequentially) -->
     <div class="footer-navigation">
         <div class="lulu-nav-row">
@@ -474,7 +477,7 @@
 <div id="luluConfigModal" class="lulu-config-modal" role="dialog" aria-modal="true" aria-labelledby="luluConfigTitle">
     <div class="lulu-config-card">
         <h2 id="luluConfigTitle" class="lulu-config-title">Configure Buttons</h2>
-        <p class="lulu-config-help">Choose any preset saved on this controller and give each dashboard button your own name.</p>
+        <p class="lulu-config-help">Choose a preset, name and icon for all five dashboard buttons, including Emergency.</p>
 
         <div class="lulu-config-row">
             <div class="lulu-config-row-title">Button 1</div>
@@ -482,6 +485,8 @@
             <input id="luluLabelInput0" class="lulu-config-input" type="text" maxlength="24" autocomplete="off">
             <label class="lulu-field-label" for="luluPresetSelect0">Preset</label>
             <select id="luluPresetSelect0" class="lulu-config-select" onchange="luluPresetChanged(0)"></select>
+            <label class="lulu-field-label" for="luluIconSelect0">Icon</label>
+            <select id="luluIconSelect0" class="lulu-config-select lulu-icon-select"></select>
         </div>
 
         <div class="lulu-config-row">
@@ -490,6 +495,8 @@
             <input id="luluLabelInput1" class="lulu-config-input" type="text" maxlength="24" autocomplete="off">
             <label class="lulu-field-label" for="luluPresetSelect1">Preset</label>
             <select id="luluPresetSelect1" class="lulu-config-select" onchange="luluPresetChanged(1)"></select>
+            <label class="lulu-field-label" for="luluIconSelect1">Icon</label>
+            <select id="luluIconSelect1" class="lulu-config-select lulu-icon-select"></select>
         </div>
 
         <div class="lulu-config-row">
@@ -498,6 +505,8 @@
             <input id="luluLabelInput2" class="lulu-config-input" type="text" maxlength="24" autocomplete="off">
             <label class="lulu-field-label" for="luluPresetSelect2">Preset</label>
             <select id="luluPresetSelect2" class="lulu-config-select" onchange="luluPresetChanged(2)"></select>
+            <label class="lulu-field-label" for="luluIconSelect2">Icon</label>
+            <select id="luluIconSelect2" class="lulu-config-select lulu-icon-select"></select>
         </div>
 
         <div class="lulu-config-row">
@@ -506,8 +515,19 @@
             <input id="luluLabelInput3" class="lulu-config-input" type="text" maxlength="24" autocomplete="off">
             <label class="lulu-field-label" for="luluPresetSelect3">Preset</label>
             <select id="luluPresetSelect3" class="lulu-config-select" onchange="luluPresetChanged(3)"></select>
+            <label class="lulu-field-label" for="luluIconSelect3">Icon</label>
+            <select id="luluIconSelect3" class="lulu-config-select lulu-icon-select"></select>
         </div>
 
+        <div class="lulu-config-row">
+            <div class="lulu-config-row-title">Emergency Button</div>
+            <label class="lulu-field-label" for="luluLabelInput4">Button label</label>
+            <input id="luluLabelInput4" class="lulu-config-input" type="text" maxlength="24" autocomplete="off">
+            <label class="lulu-field-label" for="luluPresetSelect4">Preset</label>
+            <select id="luluPresetSelect4" class="lulu-config-select" onchange="luluPresetChanged(4)"></select>
+            <label class="lulu-field-label" for="luluIconSelect4">Icon</label>
+            <select id="luluIconSelect4" class="lulu-config-select lulu-icon-select"></select>
+        </div>
         <div class="lulu-config-actions">
             <button type="button" class="lulu-config-action cancel" onclick="closeLuluConfig()">Cancel</button>
             <button type="button" class="lulu-config-action save" id="luluSaveButton" onclick="saveLuluConfig()">Save</button>
@@ -898,13 +918,16 @@
     // The LULU usermod exposes configuration through WLED's /json/state API
     // and persists it to cfg.json on the ESP32.
     var luluButtons = [
-        { label:'Preset 1', preset:1 },
-        { label:'Preset 2', preset:2 },
-        { label:'Preset 3', preset:3 },
-        { label:'Preset 4', preset:4 }
+        { label:'Preset 1', preset:1, icon:'✨' },
+        { label:'Preset 2', preset:2, icon:'🌅' },
+        { label:'Preset 3', preset:3, icon:'🌌' },
+        { label:'Preset 4', preset:4, icon:'🌊' },
+        { label:'Emergency', preset:5, icon:'⚠️' }
     ];
 
     var luluPresetList = [];
+    var luluIconList = ['✨','🌅','🌌','🌊','⚠️','☀️','🌙','💡','🎉','🌴','🔥','❄️','⭐','❤️','🏠','🎨','🚨','🟢','🔵','🟣'];
+
 
     function sendWled(query) {
         fetch('/win&' + query)
@@ -1000,10 +1023,6 @@
         }, 2500);
     }
 
-    function runLuluEmergency() {
-        sendWled('PL=5');
-        setTimeout(refreshLuluPowerState, 350);
-    }
 
     function runLuluButton(index) {
         var button = luluButtons[index];
@@ -1016,28 +1035,29 @@
     }
 
     function applyLuluLabels() {
-        for (var i = 0; i < 4; i++) {
+        for (var i = 0; i < 5; i++) {
             var label = document.getElementById('luluButtonLabel' + i);
+            var icon = document.getElementById('luluButtonIcon' + i);
             if (label) label.textContent = luluButtons[i].label || ('Preset ' + luluButtons[i].preset);
+            if (icon) icon.textContent = luluButtons[i].icon || '✨';
         }
     }
 
     function normaliseLuluButtons(buttons) {
         if (!Array.isArray(buttons)) return;
 
-        for (var i = 0; i < 4; i++) {
+        for (var i = 0; i < 5; i++) {
             if (!buttons[i]) continue;
 
             var preset = parseInt(buttons[i].preset, 10);
             var label = typeof buttons[i].label === 'string' ? buttons[i].label.trim() : '';
+            var icon = typeof buttons[i].icon === 'string' ? buttons[i].icon.trim() : '';
 
             if (Number.isFinite(preset) && preset >= 1 && preset <= 250) {
                 luluButtons[i].preset = preset;
             }
-
-            if (label) {
-                luluButtons[i].label = label.substring(0, 24);
-            }
+            if (label) luluButtons[i].label = label.substring(0, 24);
+            if (icon) luluButtons[i].icon = icon.substring(0, 12);
         }
 
         applyLuluLabels();
@@ -1127,11 +1147,36 @@
         }
     }
 
+    function fillLuluIconSelect(index) {
+        var select = document.getElementById('luluIconSelect' + index);
+        if (!select) return;
+
+        select.innerHTML = '';
+        var current = luluButtons[index].icon || '✨';
+
+        luluIconList.forEach(function(icon) {
+            var option = document.createElement('option');
+            option.value = icon;
+            option.textContent = icon;
+            if (icon === current) option.selected = true;
+            select.appendChild(option);
+        });
+
+        if (!luluIconList.includes(current)) {
+            var custom = document.createElement('option');
+            custom.value = current;
+            custom.textContent = current;
+            custom.selected = true;
+            select.insertBefore(custom, select.firstChild);
+        }
+    }
+
     function fillLuluConfigForm() {
-        for (var i = 0; i < 4; i++) {
+        for (var i = 0; i < 5; i++) {
             var input = document.getElementById('luluLabelInput' + i);
             if (input) input.value = luluButtons[i].label || '';
             fillLuluPresetSelect(i);
+            fillLuluIconSelect(i);
         }
     }
 
@@ -1182,14 +1227,16 @@
         var saveButton = document.getElementById('luluSaveButton');
         var nextButtons = [];
 
-        for (var i = 0; i < 4; i++) {
+        for (var i = 0; i < 5; i++) {
             var input = document.getElementById('luluLabelInput' + i);
             var select = document.getElementById('luluPresetSelect' + i);
+            var iconSelect = document.getElementById('luluIconSelect' + i);
             var preset = select ? parseInt(select.value, 10) : NaN;
             var label = input ? input.value.trim().substring(0, 24) : '';
+            var icon = iconSelect ? iconSelect.value : '✨';
 
             if (!Number.isFinite(preset) || preset < 1 || preset > 250) {
-                if (status) status.textContent = 'Please choose a preset for all four buttons.';
+                if (status) status.textContent = 'Please choose a preset for all five buttons.';
                 return;
             }
 
@@ -1200,7 +1247,7 @@
                 label = selected ? selected.name.substring(0, 24) : ('Preset ' + preset);
             }
 
-            nextButtons.push({ label:label, preset:preset });
+            nextButtons.push({ label:label, preset:preset, icon:icon });
         }
 
         if (status) status.textContent = 'Saving to controller...';

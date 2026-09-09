@@ -1,35 +1,43 @@
 #include "wled.h"
 
 /*
- * LULU Dashboard usermod
+ * LULU Dashboard usermod v4
  *
- * Stores four dashboard button labels and preset assignments in WLED cfg.json.
- * The web dashboard reads/writes the values through WLED's /json/state API.
+ * Stores five dashboard buttons on the controller:
+ * - label
+ * - WLED preset number
+ * - icon
  *
- * Persistent cfg.json shape:
- * "um": {
- *   "LULU": {
- *     "labels":  ["Preset 1", "Preset 2", "Preset 3", "Preset 4"],
- *     "presets": [1, 2, 3, 4]
- *   }
- * }
+ * Button 5 defaults to Emergency / preset 5.
+ * Existing v3 labels/presets remain compatible. If no icon data exists yet,
+ * built-in defaults are used until the next save.
  */
 
 class LULUDashboardUsermod : public Usermod {
   private:
     static const char _name[];
 
-    static constexpr uint8_t BUTTON_COUNT = 4;
-    static constexpr uint8_t LABEL_LENGTH = 25; // 24 characters + null terminator
+    static constexpr uint8_t BUTTON_COUNT = 5;
+    static constexpr uint8_t LABEL_LENGTH = 25; // 24 chars + terminator
+    static constexpr uint8_t ICON_LENGTH = 13;  // enough for common UTF-8 emoji
 
     char labels[BUTTON_COUNT][LABEL_LENGTH] = {
       "Preset 1",
       "Preset 2",
       "Preset 3",
-      "Preset 4"
+      "Preset 4",
+      "Emergency"
     };
 
-    uint8_t presets[BUTTON_COUNT] = {1, 2, 3, 4};
+    uint8_t presets[BUTTON_COUNT] = {1, 2, 3, 4, 5};
+
+    char icons[BUTTON_COUNT][ICON_LENGTH] = {
+      "✨",
+      "🌅",
+      "🌌",
+      "🌊",
+      "⚠️"
+    };
 
     bool savePending = false;
     unsigned long saveAfter = 0;
@@ -56,23 +64,30 @@ class LULUDashboardUsermod : public Usermod {
       return true;
     }
 
+    bool setIcon(uint8_t index, const char* value) {
+      if (index >= BUTTON_COUNT || value == nullptr || value[0] == '\0') return false;
+
+      char next[ICON_LENGTH];
+      strlcpy(next, value, sizeof(next));
+
+      if (strncmp(icons[index], next, ICON_LENGTH) == 0) return false;
+
+      strlcpy(icons[index], next, ICON_LENGTH);
+      return true;
+    }
+
     void queueSave() {
       savePending = true;
       saveAfter = millis() + 500;
     }
 
   public:
-    // WLED 0.16.1's Usermod base class requires setup() and loop().
-    // This module has no hardware to initialize, so setup() is intentionally empty.
     void setup() override {}
 
     void loop() override {
       if (!savePending) return;
       if ((long)(millis() - saveAfter) < 0) return;
 
-      // Ask WLED's main loop to persist cfg.json.
-      // In WLED 0.16.1 serializeConfig() requires a JsonObject argument,
-      // so the safe public mechanism here is to set the standard save flag.
       savePending = false;
       configNeedsWrite = true;
     }
@@ -85,6 +100,7 @@ class LULUDashboardUsermod : public Usermod {
         JsonObject button = buttons.createNestedObject();
         button[F("label")] = labels[i];
         button[F("preset")] = presets[i];
+        button[F("icon")] = icons[i];
       }
     }
 
@@ -102,12 +118,15 @@ class LULUDashboardUsermod : public Usermod {
         if (index >= BUTTON_COUNT) break;
 
         if (button.containsKey(F("label"))) {
-          const char* label = button[F("label")].as<const char*>();
-          changed |= setLabel(index, label);
+          changed |= setLabel(index, button[F("label")].as<const char*>());
         }
 
         if (button.containsKey(F("preset"))) {
           changed |= setPreset(index, button[F("preset")].as<int>());
+        }
+
+        if (button.containsKey(F("icon"))) {
+          changed |= setIcon(index, button[F("icon")].as<const char*>());
         }
 
         index++;
@@ -120,10 +139,12 @@ class LULUDashboardUsermod : public Usermod {
       JsonObject lulu = root.createNestedObject(FPSTR(_name));
       JsonArray savedLabels = lulu.createNestedArray(F("labels"));
       JsonArray savedPresets = lulu.createNestedArray(F("presets"));
+      JsonArray savedIcons = lulu.createNestedArray(F("icons"));
 
       for (uint8_t i = 0; i < BUTTON_COUNT; i++) {
         savedLabels.add(labels[i]);
         savedPresets.add(presets[i]);
+        savedIcons.add(icons[i]);
       }
     }
 
@@ -133,13 +154,11 @@ class LULUDashboardUsermod : public Usermod {
 
     bool readFromConfig(JsonObject& root) override {
       JsonObject lulu = root[FPSTR(_name)];
-
-      // Keep built-in defaults if this is the first boot with the usermod.
-      // The first dashboard save will persist them.
       if (lulu.isNull()) return true;
 
       JsonArray savedLabels = lulu[F("labels")].as<JsonArray>();
       JsonArray savedPresets = lulu[F("presets")].as<JsonArray>();
+      JsonArray savedIcons = lulu[F("icons")].as<JsonArray>();
 
       if (!savedLabels.isNull()) {
         for (uint8_t i = 0; i < BUTTON_COUNT && i < savedLabels.size(); i++) {
@@ -152,6 +171,13 @@ class LULUDashboardUsermod : public Usermod {
         for (uint8_t i = 0; i < BUTTON_COUNT && i < savedPresets.size(); i++) {
           int value = savedPresets[i].as<int>();
           if (value >= 1 && value <= 250) presets[i] = static_cast<uint8_t>(value);
+        }
+      }
+
+      if (!savedIcons.isNull()) {
+        for (uint8_t i = 0; i < BUTTON_COUNT && i < savedIcons.size(); i++) {
+          const char* value = savedIcons[i].as<const char*>();
+          if (value && value[0]) strlcpy(icons[i], value, ICON_LENGTH);
         }
       }
 
