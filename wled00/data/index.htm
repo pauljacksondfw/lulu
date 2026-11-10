@@ -424,24 +424,24 @@
     <!-- 2x2 Preset Grid Matrix -->
     <div class="preset-grid">
         <button class="preset-btn" type="button" onclick="runLuluButton(0)">
-            <span class="icon" id="luluButtonIcon0">✨</span>
+            <span class="icon" id="luluButtonIcon0">âœ¨</span>
             <span class="label" id="luluButtonLabel0">Preset 1</span>
         </button>
         <button class="preset-btn" type="button" onclick="runLuluButton(1)">
-            <span class="icon" id="luluButtonIcon1">🌅</span>
+            <span class="icon" id="luluButtonIcon1">ðŸŒ…</span>
             <span class="label" id="luluButtonLabel1">Preset 2</span>
         </button>
         <button class="preset-btn" type="button" onclick="runLuluButton(2)">
-            <span class="icon" id="luluButtonIcon2">🌌</span>
+            <span class="icon" id="luluButtonIcon2">ðŸŒŒ</span>
             <span class="label" id="luluButtonLabel2">Preset 3</span>
         </button>
         <button class="preset-btn" type="button" onclick="runLuluButton(3)">
-            <span class="icon" id="luluButtonIcon3">🌊</span>
+            <span class="icon" id="luluButtonIcon3">ðŸŒŠ</span>
             <span class="label" id="luluButtonLabel3">Preset 4</span>
         </button>
     </div>
 
-    <button class="lulu-emergency" type="button" onclick="runLuluButton(4)"><span class="icon" id="luluButtonIcon4" aria-hidden="true">⚠️</span><span class="label" id="luluButtonLabel4">Emergency</span></button>
+    <button class="lulu-emergency" type="button" onclick="runLuluButton(4)"><span class="icon" id="luluButtonIcon4" aria-hidden="true">âš ï¸</span><span class="label" id="luluButtonLabel4">Emergency</span></button>
     <!-- Administrative Paths (Single-line items stacked sequentially) -->
     <div class="footer-navigation">
         <div class="lulu-nav-row">
@@ -537,10 +537,9 @@
 </div>
 </div>
 
-<button id="luluBackButton" type="button" onclick="showLulu()">← LULU Home</button>
+<button id="luluBackButton" type="button" onclick="showLulu()">â† LULU Home</button>
 
 
-<div id="devBanner">⚠ DEVELOPMENT BUILD — WORK IN PROGRESS — NOT FOR PRODUCTION USE</div>
 <div id="cv" class="overlay">Loading WLED UI...</div>
 <noscript><div class="overlay" style="opacity:1;">Sorry, WLED UI needs JavaScript!</div></noscript>
 <div id="bg"></div>
@@ -918,15 +917,15 @@
     // The LULU usermod exposes configuration through WLED's /json/state API
     // and persists it to cfg.json on the ESP32.
     var luluButtons = [
-        { label:'Preset 1', preset:1, icon:'✨' },
-        { label:'Preset 2', preset:2, icon:'🌅' },
-        { label:'Preset 3', preset:3, icon:'🌌' },
-        { label:'Preset 4', preset:4, icon:'🌊' },
-        { label:'Emergency', preset:5, icon:'⚠️' }
+        { label:'Preset 1', preset:1, icon:'âœ¨' },
+        { label:'Preset 2', preset:2, icon:'ðŸŒ…' },
+        { label:'Preset 3', preset:3, icon:'ðŸŒŒ' },
+        { label:'Preset 4', preset:4, icon:'ðŸŒŠ' },
+        { label:'Emergency', preset:5, icon:'âš ï¸' }
     ];
 
     var luluPresetList = [];
-    var luluIconList = ['✨','🌅','🌌','🌊','⚠️','☀️','🌙','💡','🎉','🌴','🔥','❄️','⭐','❤️','🏠','🎨','🚨','🟢','🔵','🟣'];
+    var luluIconList = ['âœ¨','ðŸŒ…','ðŸŒŒ','ðŸŒŠ','âš ï¸','â˜€ï¸','ðŸŒ™','ðŸ’¡','ðŸŽ‰','ðŸŒ´','ðŸ”¥','â„ï¸','â­','â¤ï¸','ðŸ ','ðŸŽ¨','ðŸš¨','ðŸŸ¢','ðŸ”µ','ðŸŸ£'];
 
 
     function sendWled(query) {
@@ -953,12 +952,12 @@
             button.classList.add('is-on');
             label.textContent = 'ON';
             button.setAttribute('aria-pressed', 'true');
-            button.title = 'Controller is ON — tap to turn OFF';
+            button.title = 'Controller is ON â€” tap to turn OFF';
         } else if (isOn === false) {
             button.classList.add('is-off');
             label.textContent = 'OFF';
             button.setAttribute('aria-pressed', 'false');
-            button.title = 'Controller is OFF — tap to turn ON';
+            button.title = 'Controller is OFF â€” tap to turn ON';
         } else {
             button.classList.add('is-unknown');
             label.textContent = '...';
@@ -1039,7 +1038,7 @@
             var label = document.getElementById('luluButtonLabel' + i);
             var icon = document.getElementById('luluButtonIcon' + i);
             if (label) label.textContent = luluButtons[i].label || ('Preset ' + luluButtons[i].preset);
-            if (icon) icon.textContent = luluButtons[i].icon || '✨';
+            if (icon) icon.textContent = luluButtons[i].icon || 'âœ¨';
         }
     }
 
@@ -1152,7 +1151,7 @@
         if (!select) return;
 
         select.innerHTML = '';
-        var current = luluButtons[index].icon || '✨';
+        var current = luluButtons[index].icon || 'âœ¨';
 
         luluIconList.forEach(function(icon) {
             var option = document.createElement('option');
@@ -1233,7 +1232,7 @@
             var iconSelect = document.getElementById('luluIconSelect' + i);
             var preset = select ? parseInt(select.value, 10) : NaN;
             var label = input ? input.value.trim().substring(0, 24) : '';
-            var icon = iconSelect ? iconSelect.value : '✨';
+            var icon = iconSelect ? iconSelect.value : 'âœ¨';
 
             if (!Number.isFinite(preset) || preset < 1 || preset > 250) {
                 if (status) status.textContent = 'Please choose a preset for all five buttons.';
