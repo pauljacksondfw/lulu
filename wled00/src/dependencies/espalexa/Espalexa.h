@@ -1,4 +1,4 @@
-#ifndef Espalexa_h
+﻿#ifndef Espalexa_h
 #define Espalexa_h
 
 /*
@@ -17,14 +17,6 @@
  */
 
 #include "Arduino.h"
-
-// dummy macro for 8266
-#ifndef ARDUINO_ARCH_ESP32
-#ifndef ESP_IDF_VERSION_VAL
-#define ESP_IDF_VERSION_VAL(n1,n2,n3) 500
-#define ESPALEXA_DEFINED_ESP_IDF_VERSION_VAL 1  // remember to undef this later
-#endif
-#endif
 
 //you can use these defines for library config in your sketch. Just use them before #include <Espalexa.h>
 //#define ESPALEXA_ASYNC
@@ -224,7 +216,7 @@ private:
   void serveDescription()
   {
     EA_DEBUGLN("# Responding to description.xml ... #\n");
-    IPAddress localIP = WLEDNetwork.localIP();
+    IPAddress localIP = Network.localIP();
     char s[16];
     snprintf(s, sizeof(s), "%d.%d.%d.%d", localIP[0], localIP[1], localIP[2], localIP[3]);
     char buf[1024];
@@ -260,10 +252,10 @@ private:
     #ifdef ESPALEXA_ASYNC
     if (serverAsync == nullptr) {
       serverAsync = new AsyncWebServer(80);
-      serverAsync->onNotFound([this](AsyncWebServerRequest *request){server = request; serveNotFound();}); // fix: implicit capture of "this"
+      serverAsync->onNotFound([=](AsyncWebServerRequest *request){server = request; serveNotFound();});
     }
     
-    serverAsync->onRequestBody([this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total){ // fix: implicit capture of "this"
+    serverAsync->onRequestBody([=](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total){
       char b[len +1];
       b[len] = 0;
       memcpy(b, data, len);
@@ -272,9 +264,9 @@ private:
       EA_DEBUGLN(body);
     });
     #ifndef ESPALEXA_NO_SUBPAGE
-    serverAsync->on("/espalexa", HTTP_GET, [this](AsyncWebServerRequest *request){server = request; servePage();});
+    serverAsync->on("/espalexa", HTTP_GET, [=](AsyncWebServerRequest *request){server = request; servePage();});
     #endif
-    serverAsync->on("/description.xml", HTTP_GET, [this](AsyncWebServerRequest *request){server = request; serveDescription();}); // fix: implicit capture of "this"
+    serverAsync->on("/description.xml", HTTP_GET, [=](AsyncWebServerRequest *request){server = request; serveDescription();});
     serverAsync->begin();
     
     #else
@@ -298,7 +290,7 @@ private:
   //respond to UDP SSDP M-SEARCH
   void respondToSearch()
   {
-    IPAddress localIP = WLEDNetwork.localIP();
+    IPAddress localIP = Network.localIP();
     char s[16];
     sprintf(s, "%d.%d.%d.%d", localIP[0], localIP[1], localIP[2], localIP[3]);
 
@@ -358,7 +350,7 @@ public:
     #ifdef ARDUINO_ARCH_ESP32
     udpConnected = espalexaUdp.beginMulticast(IPAddress(239, 255, 255, 250), 1900);
     #else
-    udpConnected = espalexaUdp.beginMulticast(WLEDNetwork.localIP(), IPAddress(239, 255, 255, 250), 1900);
+    udpConnected = espalexaUdp.beginMulticast(Network.localIP(), IPAddress(239, 255, 255, 250), 1900);
     #endif
 
     if (udpConnected){
@@ -393,11 +385,7 @@ public:
     espalexaUdp.read(packetBuffer, packetSize);
     packetBuffer[packetSize] = 0;
   
-    #if defined(ARDUINO_ARCH_ESP32) && (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0))
-      espalexaUdp.clear();  // flush() is deprecated in arduino-esp32 3.x.y
-    #else
-      espalexaUdp.flush();
-    #endif
+    espalexaUdp.flush();
     if (!discoverable) return; //do not reply to M-SEARCH if not discoverable
   
     const char* request = (const char *) packetBuffer;
@@ -644,13 +632,5 @@ public:
   
   ~Espalexa(){} //note: Espalexa is NOT meant to be destructed
 };
-
-// dummy macro cleanup
-#ifndef ARDUINO_ARCH_ESP32
-#ifdef ESPALEXA_DEFINED_ESP_IDF_VERSION_VAL
-#undef ESP_IDF_VERSION_VAL
-#undef ESPALEXA_DEFINED_ESP_IDF_VERSION_VAL
-#endif
-#endif
 
 #endif
