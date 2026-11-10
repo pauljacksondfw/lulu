@@ -37,14 +37,14 @@ def check_elf_modules(elf_path: Path, env, module_lib_builders) -> set[str]:
         Returns the set of build_dir basenames for confirmed modules.
     """
     readelf_path = _get_readelf_path(env)
+    secho(f"INFO: Checking for usermod compilation units...")
+
     try:
         result = subprocess.run(
             [readelf_path, "--debug-dump=info", "--dwarf-depth=1", str(elf_path)],
             capture_output=True, text=True, errors="ignore", timeout=120,
         )
         output = result.stdout
-        if result.returncode != 0 or result.stderr.strip():
-            secho(f"WARNING: readelf exited {result.returncode}: {result.stderr.strip()}", fg="yellow", err=True)
     except (subprocess.TimeoutExpired, FileNotFoundError, OSError) as e:
         secho(f"WARNING: readelf failed ({e}); skipping per-module validation", fg="yellow", err=True)
         return {Path(b.build_dir).name for b in module_lib_builders}  # conservative pass
@@ -103,7 +103,7 @@ def check_elf_modules(elf_path: Path, env, module_lib_builders) -> set[str]:
 def count_usermod_objects(map_file: list[str]) -> int:
     """ Returns the number of usermod objects in the usermod list.
 
-    Computes the count from the address span between the .dynarray.usermods.00000
+    Computes the count from the address span between the .dynarray.usermods.0
     and .dynarray.usermods.99999 sentinel sections.  This mirrors the
     DYNARRAY_LENGTH macro and is reliable under LTO, where all entries are
     merged into a single ltrans partition so counting section occurrences
@@ -115,7 +115,7 @@ def count_usermod_objects(map_file: list[str]) -> int:
 
     for i, line in enumerate(map_file):
         stripped = line.strip()
-        if stripped == '.dynarray.usermods.00000':
+        if stripped == '.dynarray.usermods.0':
             if i + 1 < len(map_file):
                 m = re.search(r'0x([0-9a-fA-F]+)', map_file[i + 1])
                 if m:
@@ -143,27 +143,20 @@ def validate_map_file(source, target, env):
         Exit(1)
 
     # Identify the WLED module builders, set by load_usermods.py
-    module_lib_builders = env.get('WLED_MODULES')
-    if module_lib_builders is None:
-        secho("ERROR: WLED_MODULES not set — ensure load_usermods.py is run as a pre: script", fg="red", err=True)
-        Exit(1)
+    module_lib_builders = env['WLED_MODULES']
 
     # Extract the values we care about
     modules = {Path(builder.build_dir).name: builder.name for builder in module_lib_builders}
-    secho(f"INFO: {len(modules)} libraries included as WLED optional/user modules")
+    secho(f"INFO: {len(modules)} libraries linked as WLED optional/user modules")
 
     # Now parse the map file
     map_file_contents = read_lines(map_file_path)
     usermod_object_count = count_usermod_objects(map_file_contents)
-    secho(f"INFO: {usermod_object_count} usermod object entries found")
+    secho(f"INFO: {usermod_object_count} usermod object entries")
 
     elf_path = build_dir / env.subst("${PROGNAME}.elf")
 
     confirmed_modules = check_elf_modules(elf_path, env, module_lib_builders)
-    if confirmed_modules:
-        secho(f"INFO: Code from usermod libraries found in binary: {', '.join(confirmed_modules)}")
-    # else - if there's no usermods found, don't generate a message.  If we're legitimately missing all entries, the error report on the
-    # next line will trip; and if the usermod set is expected to be empty, then there's no need for yet another null message.
 
     missing_modules = [modname for mdir, modname in modules.items() if mdir not in confirmed_modules]
     if missing_modules:
