@@ -430,19 +430,19 @@
     <!-- 2-column, 10-button preset grid -->
     <div class="preset-grid">
         <button class="preset-btn" type="button" onclick="runLuluButton(0)">
-            <span class="icon" id="luluButtonIcon0">âœ¨</span>
+            <span class="icon" id="luluButtonIcon0">✨</span>
             <span class="label" id="luluButtonLabel0">Preset 1</span>
         </button>
         <button class="preset-btn" type="button" onclick="runLuluButton(1)">
-            <span class="icon" id="luluButtonIcon1">ðŸŒ…</span>
+            <span class="icon" id="luluButtonIcon1">🌅</span>
             <span class="label" id="luluButtonLabel1">Preset 2</span>
         </button>
         <button class="preset-btn" type="button" onclick="runLuluButton(2)">
-            <span class="icon" id="luluButtonIcon2">ðŸŒŒ</span>
+            <span class="icon" id="luluButtonIcon2">🌌</span>
             <span class="label" id="luluButtonLabel2">Preset 3</span>
         </button>
         <button class="preset-btn" type="button" onclick="runLuluButton(3)">
-            <span class="icon" id="luluButtonIcon3">ðŸŒŠ</span>
+            <span class="icon" id="luluButtonIcon3">🌊</span>
             <span class="label" id="luluButtonLabel3">Preset 4</span>
         </button>
         <button class="preset-btn" type="button" onclick="runLuluButton(5)"><span class="icon" id="luluButtonIcon5">✨</span><span class="label" id="luluButtonLabel5">Preset 5</span></button>
@@ -453,7 +453,7 @@
         <button class="preset-btn" type="button" onclick="runLuluButton(10)"><span class="icon" id="luluButtonIcon10">✨</span><span class="label" id="luluButtonLabel10">Preset 10</span></button>
     </div>
 
-    <button class="lulu-emergency" type="button" onclick="runLuluButton(4)"><span class="icon" id="luluButtonIcon4" aria-hidden="true">âš ï¸</span><span class="label" id="luluButtonLabel4">Emergency</span></button>
+    <button class="lulu-emergency" type="button" onclick="runLuluButton(4)"><span class="icon" id="luluButtonIcon4" aria-hidden="true">⚠️</span><span class="label" id="luluButtonLabel4">Emergency</span></button>
     <!-- Administrative Paths (Single-line items stacked sequentially) -->
     <div class="footer-navigation">
         <div class="lulu-nav-row">
@@ -512,7 +512,7 @@
   </div>
 </div>
 </div>
-<button id="luluBackButton" type="button" onclick="showLulu()">â† LULU Home</button>
+<button id="luluBackButton" type="button" onclick="showLulu()">← LULU Home</button>
 
 
 <div id="cv" class="overlay">Loading WLED UI...</div>
@@ -907,7 +907,7 @@
     var luluEditingIndex = -1;
 
     var luluPresetList = [];
-    var luluIconList = ['âœ¨','ðŸŒ…','ðŸŒŒ','ðŸŒŠ','âš ï¸','â˜€ï¸','ðŸŒ™','ðŸ’¡','ðŸŽ‰','ðŸŒ´','ðŸ”¥','â„ï¸','â­','â¤ï¸','ðŸ ','ðŸŽ¨','ðŸš¨','ðŸŸ¢','ðŸ”µ','ðŸŸ£'];
+    var luluIconList = ['✨','🌅','🌌','🌊','⚠️','☀️','🌙','💡','🎉','🌴','🔥','❄️','⭐','❤️','🏠','🎨','🚨','🟢','🔵','🟣'];
 
 
     function sendWled(query) {
@@ -934,12 +934,12 @@
             button.classList.add('is-on');
             label.textContent = 'ON';
             button.setAttribute('aria-pressed', 'true');
-            button.title = 'Controller is ON â€” tap to turn OFF';
+            button.title = 'Controller is ON — tap to turn OFF';
         } else if (isOn === false) {
             button.classList.add('is-off');
             label.textContent = 'OFF';
             button.setAttribute('aria-pressed', 'false');
-            button.title = 'Controller is OFF â€” tap to turn ON';
+            button.title = 'Controller is OFF — tap to turn ON';
         } else {
             button.classList.add('is-unknown');
             label.textContent = '...';
@@ -1020,7 +1020,7 @@
             var label = document.getElementById('luluButtonLabel' + i);
             var icon = document.getElementById('luluButtonIcon' + i);
             if (label) label.textContent = luluButtons[i].label || ('Preset ' + luluButtons[i].preset);
-            if (icon) icon.textContent = luluButtons[i].icon || 'âœ¨';
+            if (icon) icon.textContent = luluButtons[i].icon || '✨';
         }
     }
 
