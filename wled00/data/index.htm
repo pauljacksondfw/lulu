@@ -341,7 +341,11 @@
 
     /* Native WLED toolbar button: no overlay or extra navigation row. */
     #luluBackButton { display:none; cursor:pointer; }
-    #luluBackButton .tab-label { white-space:nowrap; }
+    #luluBackButton { width:48px; min-width:48px; max-width:48px; box-sizing:border-box; padding:8px 2px 5px; text-align:center; }
+    #luluBackButton svg { display:block; margin:0 auto 3px; }
+    #luluBackButton .tab-label { margin:0; white-space:nowrap; font-size:12px; line-height:1.15; }
+    /* Reserve clearance for the WLED toolbar so panel headings and wheel aren't hidden. */
+    #top ~ .container .tabcontent { padding-top:24px; }
     @media (hover:hover) {
         #luluPage .power-btn:hover:not(.is-on) { background:#e7e9eb; border-color:#c8ccd0; }
         #luluPage .power-btn.is-on:hover { background:#e8efff; border-color:var(--lulu-brand-blue); }
@@ -529,7 +533,7 @@
 <div class="wrapper" id="top">
     <div class="tab top">
 		<div class="btnwrap">
-            <button id="luluBackButton" type="button" onclick="showLulu()" title="Return to LULU dashboard" aria-label="LULU Home"><i class="icons">&#xe08b;</i><p class="tab-label">LULU Home</p></button>
+            <button id="luluBackButton" type="button" onclick="showLulu()" title="Return to LULU dashboard" aria-label="Back to LULU dashboard"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m7-7-7 7 7 7"/></svg><p class="tab-label">Back</p></button>
 			<button id="buttonPower" onclick="togglePower()" class="tgl"><i class="icons">&#xe08f;</i><p class="tab-label">Power</p></button>
 			<button id="buttonNl" onclick="toggleNl()"><i class="icons">&#xe2a2;</i><p class="tab-label">Timer</p></button>
 			<button id="buttonSync" onclick="toggleSync()"><i class="icons">&#xe116;</i><p class="tab-label">Sync</p></button>
