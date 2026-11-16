@@ -1147,6 +1147,7 @@
         document.getElementById('luluEditLabel').oninput = function() { luluLabelWasCustom = true; };
         document.getElementById('luluPresetSearch').value = '';
         document.getElementById('luluPresetSort').value = 'number';
+        document.getElementById('luluEditPreset').replaceChildren();
         renderLuluPresetOptions();
         var icons = document.getElementById('luluEditIcon');
         icons.replaceChildren();
@@ -1311,7 +1312,7 @@
     }
 
     window.addEventListener('load', function() {
-        loadLuluConfig();
+        Promise.all([loadLuluConfig(), loadLuluPresets()]).then(function() { applyLuluLabels(); }).catch(function(err) { console.warn('LULU preset names unavailable:', err); });
         startLuluPowerPolling();
 
         if (window.location.pathname === '/' || window.location.pathname.endsWith('/index.htm')) {
