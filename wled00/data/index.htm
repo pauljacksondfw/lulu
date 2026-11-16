@@ -503,6 +503,10 @@
     <h2 id="luluConfigTitle" class="lulu-config-title">Edit Button</h2>
     <label class="lulu-field-label" for="luluEditLabel">Button name</label>
     <input id="luluEditLabel" class="lulu-config-input" maxlength="24" autocomplete="off">
+    <label class="lulu-field-label" for="luluPresetSearch">Search presets</label>
+    <input id="luluPresetSearch" class="lulu-config-input" placeholder="Search by name or number" oninput="renderLuluPresetOptions()">
+    <label class="lulu-field-label" for="luluPresetSort">Sort presets</label>
+    <select id="luluPresetSort" class="lulu-config-select" onchange="renderLuluPresetOptions()"><option value="number">Numerical (1–250)</option><option value="name">Alphabetical (A–Z)</option></select>
     <label class="lulu-field-label" for="luluEditPreset">WLED preset</label>
     <select id="luluEditPreset" class="lulu-config-select" onchange="luluEditPresetChanged()"></select>
     <label class="lulu-field-label" for="luluEditIcon">Icon</label>
@@ -895,19 +899,20 @@
     // The LULU usermod exposes configuration through WLED's /json/state API
     // and persists it to cfg.json on the ESP32.
     var luluButtons = [
-        {label:'Preset 1',preset:1,icon:'✨'},
-        {label:'Preset 2',preset:2,icon:'🌅'},
-        {label:'Preset 3',preset:3,icon:'🌌'},
-        {label:'Preset 4',preset:4,icon:'🌊'},
-        {label:'Emergency',preset:5,icon:'⚠️'},
-        {label:'Preset 5',preset:6,icon:'✨'},
-        {label:'Preset 6',preset:7,icon:'✨'},
-        {label:'Preset 7',preset:8,icon:'✨'},
-        {label:'Preset 8',preset:9,icon:'✨'},
-        {label:'Preset 9',preset:10,icon:'✨'},
-        {label:'Preset 10',preset:11,icon:'✨'}
+        {label:'Preset 1',preset:1,icon:'✨',autoLabel:true},
+        {label:'Preset 2',preset:2,icon:'🌅',autoLabel:true},
+        {label:'Preset 3',preset:3,icon:'🌌',autoLabel:true},
+        {label:'Preset 4',preset:4,icon:'🌊',autoLabel:true},
+        {label:'Emergency',preset:5,icon:'⚠️',autoLabel:false},
+        {label:'Preset 5',preset:6,icon:'✨',autoLabel:true},
+        {label:'Preset 6',preset:7,icon:'✨',autoLabel:true},
+        {label:'Preset 7',preset:8,icon:'✨',autoLabel:true},
+        {label:'Preset 8',preset:9,icon:'✨',autoLabel:true},
+        {label:'Preset 9',preset:10,icon:'✨',autoLabel:true},
+        {label:'Preset 10',preset:11,icon:'✨',autoLabel:true}
     ];
     var luluEditingIndex = -1;
+    var luluLabelWasCustom = false;
 
     var luluPresetList = [];
     var luluIconList = ['✨','🌅','🌌','🌊','⚠️','☀️','🌙','💡','🎉','🌴','🔥','❄️','⭐','❤️','🏠','🎨','🚨','🟢','🔵','🟣'];
@@ -1018,11 +1023,19 @@
         sendWled('PL=' + preset);
     }
 
+    function luluDisplayLabel(button) {
+        if (button.autoLabel) {
+            var match = luluPresetList.find(function(p) { return p.id === button.preset; });
+            return (match ? match.name : 'Preset ' + button.preset).substring(0,24);
+        }
+        return button.label || ('Preset ' + button.preset);
+    }
+
     function applyLuluLabels() {
         for (var i = 0; i < luluButtons.length; i++) {
             var label = document.getElementById('luluButtonLabel' + i);
             var icon = document.getElementById('luluButtonIcon' + i);
-            if (label) label.textContent = luluButtons[i].label || ('Preset ' + luluButtons[i].preset);
+            if (label) label.textContent = luluDisplayLabel(luluButtons[i]);
             if (icon) icon.textContent = luluButtons[i].icon || '✨';
         }
     }
@@ -1041,6 +1054,7 @@
                 luluButtons[i].preset = preset;
             }
             if (label) luluButtons[i].label = label.substring(0, 24);
+            if (typeof buttons[i].autoLabel === 'boolean') luluButtons[i].autoLabel = buttons[i].autoLabel;
             if (icon) luluButtons[i].icon = icon.substring(0, 12);
         }
 
@@ -1090,6 +1104,7 @@
 
                 presets.sort(function(a, b) { return a.id - b.id; });
                 luluPresetList = presets;
+                applyLuluLabels();
                 return presets;
             });
     }
@@ -1110,7 +1125,7 @@
             title.textContent = index === 4 ? 'Emergency' : 'Button ' + (index < 4 ? index + 1 : index);
             var sub = document.createElement('small');
             var preset = luluPresetList.find(function(p) { return p.id === button.preset; });
-            sub.textContent = button.label + ' · ' + (preset ? preset.name : 'Preset #' + button.preset);
+            sub.textContent = luluDisplayLabel(button) + ' · ' + (preset ? preset.name : 'Preset #' + button.preset);
             details.appendChild(title);
             details.appendChild(sub);
             row.appendChild(details);
@@ -1127,22 +1142,12 @@
         var button = luluButtons[index];
         document.getElementById('luluConfigTitle').textContent =
             index === 4 ? 'Edit Emergency' : 'Edit Button ' + (index < 4 ? index + 1 : index);
-        document.getElementById('luluEditLabel').value = button.label;
-        var select = document.getElementById('luluEditPreset');
-        select.replaceChildren();
-        luluPresetList.forEach(function(preset) {
-            var option = document.createElement('option');
-            option.value = String(preset.id);
-            option.textContent = preset.name + ' (#' + preset.id + ')';
-            select.appendChild(option);
-        });
-        if (!luluPresetList.some(function(p) {return p.id === button.preset;})) {
-            var missing = document.createElement('option');
-            missing.value = String(button.preset);
-            missing.textContent = 'Preset #' + button.preset + ' (not currently saved)';
-            select.appendChild(missing);
-        }
-        select.value = String(button.preset);
+        luluLabelWasCustom = !button.autoLabel;
+        document.getElementById('luluEditLabel').value = luluDisplayLabel(button);
+        document.getElementById('luluEditLabel').oninput = function() { luluLabelWasCustom = true; };
+        document.getElementById('luluPresetSearch').value = '';
+        document.getElementById('luluPresetSort').value = 'number';
+        renderLuluPresetOptions();
         var icons = document.getElementById('luluEditIcon');
         icons.replaceChildren();
         var choices = luluIconList.slice();
@@ -1158,12 +1163,39 @@
         document.getElementById('luluConfigModal').style.display = 'flex';
     }
 
+    function renderLuluPresetOptions() {
+        var select = document.getElementById('luluEditPreset');
+        var current = select.value || String(luluButtons[luluEditingIndex].preset);
+        var term = document.getElementById('luluPresetSearch').value.trim().toLocaleLowerCase();
+        var sort = document.getElementById('luluPresetSort').value;
+        var options = luluPresetList.filter(function(p) {
+            return !term || p.name.toLocaleLowerCase().includes(term) || String(p.id).includes(term);
+        }).slice();
+        options.sort(sort === 'name'
+            ? function(a,b) { return a.name.localeCompare(b.name, undefined, {sensitivity:'base'}) || a.id-b.id; }
+            : function(a,b) { return a.id-b.id; });
+        select.replaceChildren();
+        if (!options.some(function(p) {return String(p.id) === current;})) {
+            var previous = document.createElement('option');
+            previous.value = current;
+            previous.textContent = 'Current: #' + current + ' (outside search)';
+            select.appendChild(previous);
+        }
+        options.forEach(function(p) {
+            var option = document.createElement('option');
+            option.value = String(p.id);
+            option.textContent = p.name + ' (#' + p.id + ')';
+            select.appendChild(option);
+        });
+        select.value = current;
+    }
+
     function luluEditPresetChanged() {
-        var label = document.getElementById('luluEditLabel');
-        var selected = parseInt(document.getElementById('luluEditPreset').value,10);
-        if (!label.value.trim() || /^Preset\\s+\\d+$/i.test(label.value.trim())) {
-            var preset = luluPresetList.find(function(p) {return p.id === selected;});
-            if (preset) label.value = preset.name.substring(0,24);
+        if (!luluLabelWasCustom) {
+            var label = document.getElementById('luluEditLabel');
+            var selected = parseInt(document.getElementById('luluEditPreset').value,10);
+            var preset = luluPresetList.find(function(p) { return p.id === selected; });
+            label.value = (preset ? preset.name : 'Preset ' + selected).substring(0,24);
         }
     }
 
@@ -1205,9 +1237,9 @@
             status.textContent = 'Select a valid WLED preset.';
             return;
         }
-        if (!label) label = 'Preset ' + preset;
-        var next = luluButtons.map(function(b) {return {label:b.label,preset:b.preset,icon:b.icon};});
-        next[index] = {label:label,preset:preset,icon:icon};
+        if (!label) { label = (luluPresetList.find(function(p) {return p.id === preset;}) || {name:'Preset ' + preset}).name.substring(0,24); luluLabelWasCustom = false; }
+        var next = luluButtons.map(function(b) {return {label:b.label,preset:b.preset,icon:b.icon,autoLabel:!!b.autoLabel};});
+        next[index] = {label:label,preset:preset,icon:icon,autoLabel:!luluLabelWasCustom};
         status.textContent = 'Saving to controller...';
         saveButton.disabled = true;
         fetch('/json/state',{
@@ -1222,7 +1254,7 @@
             if (!state || !state.LULU || !Array.isArray(state.LULU.buttons) ||
                 state.LULU.buttons.length !== next.length) throw new Error('LULU usermod not updated');
             var saved = state.LULU.buttons[index];
-            if (!saved || saved.label !== label || Number(saved.preset) !== preset || saved.icon !== icon)
+            if (!saved || saved.label !== label || Number(saved.preset) !== preset || saved.icon !== icon || saved.autoLabel !== !luluLabelWasCustom)
                 throw new Error('Controller did not retain the changes');
             normaliseLuluButtons(state.LULU.buttons);
             renderLuluButtonRows();
