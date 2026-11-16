@@ -41,6 +41,8 @@ class LULUDashboardUsermod : public Usermod {
       "✨", "✨", "✨", "✨", "✨", "✨"
     };
 
+    bool autoLabels[BUTTON_COUNT] = {true, true, true, true, false, true, true, true, true, true, true};
+
     bool savePending = false;
     unsigned long saveAfter = 0;
 
@@ -101,6 +103,7 @@ class LULUDashboardUsermod : public Usermod {
       for (uint8_t i = 0; i < BUTTON_COUNT; i++) {
         JsonObject button = buttons.createNestedObject();
         button[F("label")] = labels[i];
+        button[F("autoLabel")] = autoLabels[i];
         button[F("preset")] = presets[i];
         button[F("icon")] = icons[i];
       }
@@ -118,6 +121,11 @@ class LULUDashboardUsermod : public Usermod {
 
       for (JsonObject button : buttons) {
         if (index >= BUTTON_COUNT) break;
+
+        if (button.containsKey(F("autoLabel"))) {
+          bool next = button[F("autoLabel")].as<bool>();
+          if (autoLabels[index] != next) { autoLabels[index] = next; changed = true; }
+        }
 
         if (button.containsKey(F("label"))) {
           changed |= setLabel(index, button[F("label")].as<const char*>());
@@ -142,11 +150,13 @@ class LULUDashboardUsermod : public Usermod {
       JsonArray savedLabels = lulu.createNestedArray(F("labels"));
       JsonArray savedPresets = lulu.createNestedArray(F("presets"));
       JsonArray savedIcons = lulu.createNestedArray(F("icons"));
+      JsonArray savedAutoLabels = lulu.createNestedArray(F("autoLabels"));
 
       for (uint8_t i = 0; i < BUTTON_COUNT; i++) {
         savedLabels.add(labels[i]);
         savedPresets.add(presets[i]);
         savedIcons.add(icons[i]);
+        savedAutoLabels.add(autoLabels[i]);
       }
     }
 
@@ -161,6 +171,13 @@ class LULUDashboardUsermod : public Usermod {
       JsonArray savedLabels = lulu[F("labels")].as<JsonArray>();
       JsonArray savedPresets = lulu[F("presets")].as<JsonArray>();
       JsonArray savedIcons = lulu[F("icons")].as<JsonArray>();
+      JsonArray savedAutoLabels = lulu[F("autoLabels")].as<JsonArray>();
+      if (!savedAutoLabels.isNull()) {
+        for (uint8_t i = 0; i < BUTTON_COUNT && i < savedAutoLabels.size(); i++) autoLabels[i] = savedAutoLabels[i].as<bool>();
+      } else {
+        // Older configurations: preserve labels that were explicitly renamed.
+        for (uint8_t i = 0; i < BUTTON_COUNT; i++) autoLabels[i] = (i != 4);
+      }
 
       if (!savedLabels.isNull()) {
         for (uint8_t i = 0; i < BUTTON_COUNT && i < savedLabels.size(); i++) {
@@ -183,6 +200,14 @@ class LULUDashboardUsermod : public Usermod {
         }
       }
 
+      if (savedAutoLabels.isNull() && !savedLabels.isNull()) {
+        for (uint8_t i = 0; i < BUTTON_COUNT && i < savedLabels.size(); i++) {
+          const char* value = savedLabels[i].as<const char*>();
+          char defaultName[16];
+          snprintf(defaultName, sizeof(defaultName), "Preset %u", static_cast<unsigned>(i < 4 ? i + 1 : i));
+          if (value && strcmp(value, defaultName) != 0) autoLabels[i] = false;
+        }
+      }
       return true;
     }
 };
