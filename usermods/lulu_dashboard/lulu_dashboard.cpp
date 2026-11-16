@@ -26,7 +26,7 @@ class LULUDashboardUsermod : public Usermod {
       "Preset 2",
       "Preset 3",
       "Preset 4",
-      "Emergency",
+      "All Lights On",
       "Preset 5", "Preset 6", "Preset 7", "Preset 8", "Preset 9", "Preset 10"
     };
 
@@ -37,7 +37,7 @@ class LULUDashboardUsermod : public Usermod {
       "🌅",
       "🌌",
       "🌊",
-      "⚠️",
+      "☀️",
       "✨", "✨", "✨", "✨", "✨", "✨"
     };
 
@@ -207,6 +207,12 @@ class LULUDashboardUsermod : public Usermod {
           snprintf(defaultName, sizeof(defaultName), "Preset %u", static_cast<unsigned>(i < 4 ? i + 1 : i));
           if (value && strcmp(value, defaultName) != 0) autoLabels[i] = false;
         }
+      }
+      if (strcmp(labels[4], "Emergency") == 0 && strcmp(icons[4], "⚠️") == 0) {
+        strlcpy(labels[4], "All Lights On", LABEL_LENGTH);
+        strlcpy(icons[4], "☀️", ICON_LENGTH);
+        autoLabels[4] = false;
+        queueSave();
       }
       return true;
     }
