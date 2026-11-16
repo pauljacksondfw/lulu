@@ -339,20 +339,32 @@
         line-height:1.4;
     }
 
-    #luluBackButton {
-        position:fixed;
-        top:max(12px, env(safe-area-inset-top));
-        right:max(12px, env(safe-area-inset-right));
-        z-index:99999;
+    /* Home navigation occupies its own row above WLED's toolbar, never floats over controls. */
+    #luluHomeStrip {
         display:none;
-        padding:10px 14px;
-        border:1px solid rgba(255,255,255,.25);
-        border-radius:9px;
+        position:relative;
+        z-index:2;
+        box-sizing:border-box;
+        width:100%;
+        min-height:44px;
+        padding:5px 12px;
+        background:#22272f;
+        border-bottom:1px solid #404957;
+        align-items:center;
+        justify-content:flex-start;
+    }
+    #luluBackButton {
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        min-height:32px;
+        padding:5px 12px;
+        border:1px solid #66758b;
+        border-radius:7px;
         background:#323c5a;
         color:#fff;
-        font:600 13px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+        font:600 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
         cursor:pointer;
-        box-shadow:0 3px 12px rgba(0,0,0,.25);
     }
 
     @media (hover:hover) {
@@ -532,7 +544,7 @@
   </div>
 </div>
 </div>
-<button id="luluBackButton" type="button" onclick="showLulu()">← LULU Home</button>
+
 
 
 <div id="cv" class="overlay">Loading WLED UI...</div>
@@ -540,6 +552,7 @@
 <div id="bg"></div>
 
 <div class="wrapper" id="top">
+    <div id="luluHomeStrip"><button id="luluBackButton" type="button" onclick="showLulu()">← LULU Home</button></div>
 	<div class="tab top">
 		<div class="btnwrap">
 			<button id="buttonPower" onclick="togglePower()" class="tgl"><i class="icons">&#xe08f;</i><p class="tab-label">Power</p></button>
@@ -1305,12 +1318,12 @@
     function hideLulu() {
         closeLuluSettingsMenu();
         var lulu = document.getElementById('luluPage');
-        var back = document.getElementById('luluBackButton');
+        var back = document.getElementById('luluHomeStrip');
 
         closeLuluConfig();
 
         if (lulu) lulu.style.setProperty('display', 'none', 'important');
-        if (back) back.style.display = 'block';
+        if (back) back.style.display = 'flex';
 
         document.body.style.overflow = '';
         document.documentElement.style.overflow = '';
