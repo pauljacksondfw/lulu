@@ -3,12 +3,12 @@
 /*
  * LULU Dashboard usermod v4
  *
- * Stores five dashboard buttons on the controller:
+ * Stores eleven dashboard buttons (ten presets plus Emergency) on the controller:
  * - label
  * - WLED preset number
  * - icon
  *
- * Button 5 defaults to Emergency / preset 5.
+ * Button 5 remains Emergency / preset 5. New buttons append after it.
  * Existing v3 labels/presets remain compatible. If no icon data exists yet,
  * built-in defaults are used until the next save.
  */
@@ -17,7 +17,7 @@ class LULUDashboardUsermod : public Usermod {
   private:
     static const char _name[];
 
-    static constexpr uint8_t BUTTON_COUNT = 5;
+    static constexpr uint8_t BUTTON_COUNT = 11;
     static constexpr uint8_t LABEL_LENGTH = 25; // 24 chars + terminator
     static constexpr uint8_t ICON_LENGTH = 13;  // enough for common UTF-8 emoji
 
@@ -26,17 +26,19 @@ class LULUDashboardUsermod : public Usermod {
       "Preset 2",
       "Preset 3",
       "Preset 4",
-      "Emergency"
+      "Emergency",
+      "Preset 5", "Preset 6", "Preset 7", "Preset 8", "Preset 9", "Preset 10"
     };
 
-    uint8_t presets[BUTTON_COUNT] = {1, 2, 3, 4, 5};
+    uint8_t presets[BUTTON_COUNT] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
     char icons[BUTTON_COUNT][ICON_LENGTH] = {
       "✨",
       "🌅",
       "🌌",
       "🌊",
-      "⚠️"
+      "⚠️",
+      "✨", "✨", "✨", "✨", "✨", "✨"
     };
 
     bool savePending = false;
