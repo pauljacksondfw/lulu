@@ -406,7 +406,7 @@
 #luluButtonPage .lulu-config-action {padding:10px 16px;}
 #luluPage .lulu-settings-footer { position:relative; align-items:flex-start; padding-top:12px; }
 #luluPage .lulu-settings-toggle { display:flex; align-items:center; justify-content:center; width:36px; height:36px; padding:0; border:1px solid var(--lulu-line); border-radius:9px; background:#fff; color:var(--lulu-brand-blue); cursor:pointer; }
-#luluPage .lulu-settings-menu { position:absolute; bottom:calc(100% + 8px); left:0; width:min(310px, 100%); padding:9px; background:#fff; border:1px solid var(--lulu-line); border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,.17); z-index:20; }
+#luluPage .lulu-settings-menu { position:static; width:100%; max-width:310px; padding:9px; background:#fff; border:1px solid var(--lulu-line); border-radius:12px; }
 #luluPage .lulu-settings-menu[hidden] { display:none; }
 #luluPage .lulu-settings-menu .lulu-nav-row { display:flex; flex-direction:column; gap:6px; }
 #luluPage .lulu-settings-menu .wide-link { display:flex; align-items:center; justify-content:center; gap:8px; }
@@ -459,7 +459,7 @@
     <button class="lulu-emergency" type="button" onclick="runLuluButton(4)"><span class="icon" id="luluButtonIcon4" aria-hidden="true">☀️</span><span class="label" id="luluButtonLabel4">All Lights On</span></button>
     <!-- Administrative Paths (Single-line items stacked sequentially) -->
     <div class="footer-navigation lulu-settings-footer">
-        <button type="button" id="luluSettingsToggle" class="lulu-settings-toggle" aria-label="Open settings menu" aria-expanded="false" aria-controls="luluSettingsMenu" onclick="toggleLuluSettingsMenu()">
+        <button type="button" id="luluSettingsToggle" class="lulu-settings-toggle" aria-label="Open settings menu" aria-expanded="false" aria-controls="luluSettingsMenu" onclick="toggleLuluSettingsMenu(event)">
             <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.1 2 2.2.4 1.7-.9 2 2-1 1.7.7 2 2.3.8v2l-2.3.8-.7 2 1 1.7-2 2-1.7-.9-2.2.4L12 21l-1.1-2-2.2-.4-1.7.9-2-2 1-1.7-.7-2L3 13v-2l2.3-.8.7-2-1-1.7 2-2 1.7.9 2.2-.4z"/><circle cx="12" cy="12" r="2.7"/></svg>
         </button>
         <div id="luluSettingsMenu" class="lulu-settings-menu" hidden>
@@ -1282,12 +1282,14 @@
         if (toggle) toggle.setAttribute('aria-expanded', 'false');
     }
 
-    function toggleLuluSettingsMenu() {
+    function toggleLuluSettingsMenu(event) {
+        if (event) { event.preventDefault(); event.stopPropagation(); }
         var menu = document.getElementById('luluSettingsMenu');
         var toggle = document.getElementById('luluSettingsToggle');
         if (!menu || !toggle) return;
         menu.hidden = !menu.hidden;
         toggle.setAttribute('aria-expanded', String(!menu.hidden));
+        toggle.blur();
     }
 
     document.addEventListener('click', function(event) {
