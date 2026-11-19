@@ -1,3 +1,4 @@
+import os
 # Add a section to the linker script to store our dynamic arrays
 # This is implemented as a pio post-script to ensure that we can
 # place our linker script at the correct point in the command arguments.
@@ -39,6 +40,7 @@ if env.get("PIOPLATFORM") == "espressif32":
         build_dir = Path(env.subst("$BUILD_DIR"))
         patched_path = build_dir / "dynarray_sections.ld"
         import shutil
+        os.makedirs(os.path.dirname(patched_path), exist_ok=True)
         shutil.copy(sections_ld_path, patched_path)
         inject_before_marker(patched_path, "_rodata_end = ABSOLUTE(.);")
 
