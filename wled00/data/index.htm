@@ -14,7 +14,7 @@
     /* LULU dashboard overlay.
        WLED remains rendered underneath so its JavaScript can initialize normally. */
     #luluPage {
-        --lulu-bg:#f4f5f6;
+        --lulu-bg:#000;
         --lulu-surface:#fff;
         --lulu-ink:#25282c;
         --lulu-muted:#777d84;
@@ -43,14 +43,12 @@
         font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
 
         background-color:var(--lulu-bg);
-        background-image:
-            repeating-linear-gradient(45deg,transparent 0,transparent 23px,rgba(51,61,87,.025) 23px,rgba(51,61,87,.025) 24px),
-            repeating-linear-gradient(-45deg,transparent 0,transparent 23px,rgba(51,61,87,.025) 23px,rgba(51,61,87,.025) 24px);
+        background-image:none;
 
         box-sizing:border-box;
     }
 
-    #luluPage .lulu-firmware-version { text-align:center; font-size:11px; line-height:1.5; color:var(--lulu-muted); letter-spacing:.04em; margin:14px 0 0; user-select:text; }
+    #luluPage .lulu-firmware-version { text-align:center; font-size:11px; line-height:1.5; color:var(--lulu-muted); letter-spacing:.04em; margin:0; user-select:text; }
 
     #luluPage *,
     #luluPage *::before,
@@ -66,7 +64,7 @@
         background:var(--lulu-surface);
         border:1px solid var(--lulu-brand-blue);
         border-radius:20px;
-        padding:32px 28px;
+        padding:32px 28px 14px;
         box-shadow:0 12px 40px rgba(25,30,35,.045),0 2px 8px rgba(25,30,35,.025);
     }
 
@@ -351,7 +349,7 @@
     }
 
     @media (max-width:360px) {
-        #luluPage .app-container { padding:26px 18px; }
+        #luluPage .app-container { padding:26px 18px 14px; }
         #luluPage .preset-grid { gap:10px; }
     }
 
@@ -366,7 +364,7 @@
 #luluPage .preset-grid{margin-bottom:14px}
 #luluPage .preset-btn .icon{font-size:23px;margin-bottom:5px}
 #luluPage .preset-btn .label{font-size:13px}
-#luluPage .lulu-emergency{width:100%;min-height:97.2px;margin:8px 0 22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;border:1px solid #9ebbdc;border-radius:12px;background:#dce9f8;color:#245b98;font:600 15px inherit;cursor:pointer}
+#luluPage .lulu-emergency{width:100%;min-height:97.2px;margin:8px 0 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;border:1px solid #9ebbdc;border-radius:12px;background:#dce9f8;color:#245b98;font:600 15px inherit;cursor:pointer}
 #luluPage .lulu-emergency .icon{font-size:28px;line-height:1}
 #luluPage .lulu-emergency .label{font-size:15px;font-weight:700;color:#245b98}
 #luluPage .lulu-nav-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
@@ -396,7 +394,7 @@
 #luluButtonPage .lulu-button-row {display:flex;width:100%;align-items:center;justify-content:space-between;text-align:left;padding:15px;margin:8px 0;background:#fafafa;border:1px solid #e2e4e7;border-radius:10px;color:#323c5a;cursor:pointer;}
 #luluButtonPage .lulu-button-row small {display:block;color:#777d84;margin-top:4px;}
 #luluButtonPage .lulu-config-action {padding:10px 16px;}
-#luluPage .lulu-settings-footer { position:relative; align-items:flex-start; padding-top:12px; }
+#luluPage .lulu-settings-footer { position:relative; flex-direction:row; align-items:center; justify-content:space-between; padding-top:8px; }
 #luluPage .lulu-settings-toggle { display:flex; align-items:center; justify-content:center; width:36px; height:36px; padding:0; border:1px solid var(--lulu-line); border-radius:9px; background:#fff; color:var(--lulu-brand-blue); cursor:pointer; }
 #luluPage .lulu-settings-menu { position:absolute; bottom:calc(100% + 8px); left:0; width:100%; max-width:310px; padding:9px; z-index:20; visibility:hidden; pointer-events:none; background:#fff; border:1px solid var(--lulu-line); border-radius:12px; }
 #luluPage .lulu-settings-menu.is-open { visibility:visible; pointer-events:auto; }
@@ -454,6 +452,7 @@
         <button type="button" id="luluSettingsToggle" class="lulu-settings-toggle" aria-label="Open settings menu" aria-expanded="false" aria-controls="luluSettingsMenu" onclick="toggleLuluSettingsMenu(event)">
             <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.1 2 2.2.4 1.7-.9 2 2-1 1.7.7 2 2.3.8v2l-2.3.8-.7 2 1 1.7-2 2-1.7-.9-2.2.4L12 21l-1.1-2-2.2-.4-1.7.9-2-2 1-1.7-.7-2L3 13v-2l2.3-.8.7-2-1-1.7 2-2 1.7.9 2.2-.4z"/><circle cx="12" cy="12" r="2.7"/></svg>
         </button>
+        <div class="lulu-firmware-version" aria-label="Firmware version">16.0.1-0.1</div>
         <div id="luluSettingsMenu" class="lulu-settings-menu" aria-hidden="true">
             <div class="lulu-nav-row">
 
@@ -486,7 +485,6 @@
             </div>
         </div>
     </div>
-    <div class="lulu-firmware-version" aria-label="Firmware version">16.0.1-0.1</div>
 </div>
 
 <section id="luluButtonPage" class="lulu-button-page" style="display:none" aria-label="Button Configuration">
