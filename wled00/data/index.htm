@@ -506,6 +506,7 @@
     <select id="luluPresetSort" class="lulu-config-select" onchange="renderLuluPresetOptions()"><option value="number">Numerical (1–250)</option><option value="name">Alphabetical (A–Z)</option></select>
     <label class="lulu-field-label" for="luluEditPreset">WLED preset</label>
     <select id="luluEditPreset" class="lulu-config-select" onchange="luluEditPresetChanged()"></select>
+    <label style="display:flex;align-items:center;gap:8px;margin:12px 0;font-size:14px;"><input type="checkbox" id="luluSunsetDefault" style="appearance:auto;-webkit-appearance:checkbox;width:18px;height:18px;"> Set as Sunset Default</label>
     <label class="lulu-field-label" for="luluEditIcon">Icon</label>
     <select id="luluEditIcon" class="lulu-config-select"></select>
     <div class="lulu-config-actions">
@@ -1137,6 +1138,7 @@
 
     function editLuluButton(index) {
         luluEditingIndex = index;
+        document.getElementById('luluSunsetDefault').checked = false;
         var button = luluButtons[index];
         document.getElementById('luluConfigTitle').textContent =
             index === 4 ? 'Edit Emergency' : 'Edit Button ' + (index < 4 ? index + 1 : index);
@@ -1225,6 +1227,24 @@
         document.getElementById('luluButtonPage').style.display = 'none';
     }
 
+    async function setLuluSunsetDefault(preset) {
+        var res = await fetch('/json/cfg',{cache:'no-store'});
+        if (!res.ok) throw new Error('Cannot read timer settings. Unlock controller settings if PIN protected.');
+        var cfg = await res.json();
+        if (!cfg.timers || !Array.isArray(cfg.timers.ins)) throw new Error('Timer settings unavailable');
+        var timers = cfg.timers.ins;
+        var sunset = timers.filter(function(t) {return Number(t.hour) === 254;});
+        if (sunset.length !== 1) throw new Error('Configure exactly one Sunset timer in Device > Time & Macros first.');
+        sunset[0].macro = preset;
+        sunset[0].en = 1;
+        res = await fetch('/json/cfg',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({timers:{ins:timers}})});
+        if (!res.ok) throw new Error('Sunset timer update rejected');
+        res = await fetch('/json/cfg',{cache:'no-store'});
+        if (!res.ok) throw new Error('Cannot verify sunset timer');
+        var check = await res.json();
+        if (!check.timers || !Array.isArray(check.timers.ins) || !check.timers.ins.some(function(t) {return Number(t.hour) === 254 && Number(t.macro) === preset && Number(t.en) === 1;})) throw new Error('Sunset timer update not verified');
+    }
+
     function saveLuluConfig() {
         var index = luluEditingIndex;
         if (index < 0) return;
@@ -1233,6 +1253,7 @@
         var label = document.getElementById('luluEditLabel').value.trim().substring(0,24);
         var preset = parseInt(document.getElementById('luluEditPreset').value,10);
         var icon = document.getElementById('luluEditIcon').value;
+        var setSunset = document.getElementById('luluSunsetDefault').checked;
         if (!Number.isFinite(preset) || preset < 1 || preset > 250) {
             status.textContent = 'Select a valid WLED preset.';
             return;
@@ -1258,6 +1279,10 @@
                 throw new Error('Controller did not retain the changes');
             normaliseLuluButtons(state.LULU.buttons);
             renderLuluButtonRows();
+            if (setSunset) {
+                status.textContent = 'Updating sunset timer...';
+                return setLuluSunsetDefault(preset).then(function() { closeLuluEditor(); }).catch(function(err) { throw new Error('Button saved. ' + err.message); });
+            }
             closeLuluEditor();
         })
         .catch(function(err) {status.textContent = err.message;})
