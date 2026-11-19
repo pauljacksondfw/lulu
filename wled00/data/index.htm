@@ -160,6 +160,8 @@
         padding:16px;
     }
 
+    #luluPage .preset-btn, #luluPage .lulu-emergency { position:relative; }
+    #luluPage .lulu-sunset-default::after { content:""; position:absolute; top:9px; right:9px; width:10px; height:10px; border-radius:50%; background:#e9a128; pointer-events:none; }
     #luluPage .preset-btn .icon {
         font-size:26px;
         margin-bottom:12px;
@@ -1030,11 +1032,36 @@
         return button.label || ('Preset ' + button.preset);
     }
 
+    var luluSunsetPresets = [];
+    async function loadLuluSunsetDefault() {
+        try {
+            var res = await fetch('/json/cfg',{cache:'no-store'});
+            if (!res.ok) throw new Error('Timer settings unavailable');
+            var cfg = await res.json();
+            if (!cfg.timers || !Array.isArray(cfg.timers.ins)) throw new Error('Timer settings unavailable');
+            luluSunsetPresets = cfg.timers.ins.filter(function(t) {return Number(t.hour) === 254 && Number(t.en) === 1;}).map(function(t) {return Number(t.macro);});
+        } catch(err) {
+            luluSunsetPresets = [];
+            console.warn('LULU sunset default unavailable:',err);
+        }
+        applyLuluLabels();
+    }
+
     function applyLuluLabels() {
         for (var i = 0; i < luluButtons.length; i++) {
             var label = document.getElementById('luluButtonLabel' + i);
             var icon = document.getElementById('luluButtonIcon' + i);
-            if (label) label.textContent = luluDisplayLabel(luluButtons[i]);
+            if (label) {
+                label.textContent = luluDisplayLabel(luluButtons[i]);
+                var btn = label.closest('button');
+                if (btn) {
+                    var isDefault = luluSunsetPresets.includes(Number(luluButtons[i].preset));
+                    btn.classList.toggle('lulu-sunset-default',isDefault);
+                    if (isDefault) btn.setAttribute('title','Sunset default');
+                    else btn.removeAttribute('title');
+                    btn.setAttribute('aria-label',label.textContent + (isDefault ? ' — Sunset default' : ''));
+                }
+            }
             if (icon) icon.textContent = luluButtons[i].icon || '✨';
         }
     }
@@ -1125,6 +1152,7 @@
             var sub = document.createElement('small');
             var preset = luluPresetList.find(function(p) { return p.id === button.preset; });
             sub.textContent = luluDisplayLabel(button) + ' · ' + (preset ? preset.name : 'Preset #' + button.preset);
+            if (luluSunsetPresets.includes(Number(button.preset))) sub.textContent += ' · Sunset default';
             details.appendChild(title);
             details.appendChild(sub);
             row.appendChild(details);
@@ -1206,7 +1234,7 @@
         page.style.display = 'block';
         var status = document.getElementById('luluPageStatus');
         status.textContent = 'Loading presets from this controller...';
-        Promise.all([loadLuluConfig(),loadLuluPresets()])
+        Promise.all([loadLuluConfig(),loadLuluPresets(),loadLuluSunsetDefault()])
             .then(function() {
                 renderLuluButtonRows();
                 status.textContent = luluPresetList.length ? '' : 'No saved presets found in WLED.';
@@ -1281,7 +1309,7 @@
             renderLuluButtonRows();
             if (setSunset) {
                 status.textContent = 'Updating sunset timer...';
-                return setLuluSunsetDefault(preset).then(function() { closeLuluEditor(); }).catch(function(err) { throw new Error('Button saved. ' + err.message); });
+                return setLuluSunsetDefault(preset).then(function() { return loadLuluSunsetDefault(); }).then(function() { renderLuluButtonRows(); closeLuluEditor(); }).catch(function(err) { throw new Error('Button saved. ' + err.message); });
             }
             closeLuluEditor();
         })
@@ -1351,6 +1379,7 @@
         window.scrollTo(0, 0);
 
         refreshLuluPowerState();
+        loadLuluSunsetDefault();
     }
 
     function openSetup() {
